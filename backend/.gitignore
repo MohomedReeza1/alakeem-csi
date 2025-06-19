@@ -1,0 +1,7 @@
+.env
+__pycache__/
+env/
+venv/
+*.pyc
+*.sqlite3
+alembic/versions/

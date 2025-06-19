@@ -9,8 +9,8 @@ function App() {
     <>
     <Toaster position="top-center" />
     <Routes>
-      <Route path="/Login" element={<Login />} />
-      <Route path="/" element={<FeedbackForm />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/feedback" element={<FeedbackForm />} />
     </Routes>
     </>
   )

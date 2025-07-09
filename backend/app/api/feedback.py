@@ -23,12 +23,16 @@ def create_feedback(feedback: schemas.FeedbackCreate, db: Session = Depends(get_
 @router.get("/feedbacks", response_model=List[schemas.FeedbackOut])
 def read_feedbacks(
     skip: int = 0,
-    limit: int = 50,
+    limit: int = 15,
     name: Optional[str] = None,
     passport_number: Optional[str] = None,
     reference_number: Optional[str] = None,
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
+    min_rating: Optional[float] = None,
+    max_rating: Optional[float] = None,
+    criterion: Optional[str] = None,
+    criterion_value: Optional[int] = None,
     db: Session = Depends(get_db)
 ):
     feedbacks = crud.get_feedbacks(
@@ -40,6 +44,10 @@ def read_feedbacks(
         reference_number=reference_number,
         start_date=start_date,
         end_date=end_date,
+        min_rating=min_rating,
+        max_rating=max_rating,
+        criterion=criterion,
+        criterion_value=criterion_value
     )
     return feedbacks
 

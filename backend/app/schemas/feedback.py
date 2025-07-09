@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
+from uuid import UUID
 
 class FeedbackBase(BaseModel):
     name: str
@@ -19,7 +20,7 @@ class FeedbackCreate(FeedbackBase):
     pass
 
 class FeedbackOut(FeedbackBase):
-    id: str
+    id: UUID
     created_at: datetime
 
     class Config:

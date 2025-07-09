@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 from app import models, schemas
 from typing import List, Optional
-from sqlalchemy import func
+from sqlalchemy import func, and_
+from datetime import date
 
 def create_feedback(db: Session, feedback: schemas.FeedbackCreate):
     db_feedback = models.Feedback(**feedback.dict())
@@ -10,8 +11,31 @@ def create_feedback(db: Session, feedback: schemas.FeedbackCreate):
     db.refresh(db_feedback)
     return db_feedback
 
-def get_feedbacks(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Feedback).offset(skip).limit(limit).all()
+def get_feedbacks(
+    db: Session,
+    skip: int = 0,
+    limit: int = 50,
+    name: Optional[str] = None,
+    passport_number: Optional[str] = None,
+    reference_number: Optional[str] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+):
+    query = db.query(models.Feedback)
+
+    if name:
+        query = query.filter(models.Feedback.name.ilike(f"%{name}%"))
+    if passport_number:
+        query = query.filter(models.Feedback.passport_number.ilike(f"%{passport_number}%"))
+    if reference_number:
+        query = query.filter(models.Feedback.reference_number.ilike(f"%{reference_number}%"))
+
+    if start_date:
+        query = query.filter(models.Feedback.created_at >= start_date)
+    if end_date:
+        query = query.filter(models.Feedback.created_at <= end_date)
+
+    return query.order_by(models.Feedback.created_at.desc()).offset(skip).limit(limit).all()
 
 def get_feedback_by_id(db: Session, feedback_id: str):
     return db.query(models.Feedback).filter(models.Feedback.id == feedback_id).first()

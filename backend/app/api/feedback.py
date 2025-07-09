@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from typing import List
 from app import schemas, models, crud
 from app.db import SessionLocal
+from datetime import date
+from typing import Optional
 
 router = APIRouter()
 
@@ -19,8 +21,27 @@ def create_feedback(feedback: schemas.FeedbackCreate, db: Session = Depends(get_
     return {"message": "Feedback submitted successfully"}
 
 @router.get("/feedbacks", response_model=List[schemas.FeedbackOut])
-def read_feedbacks(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return crud.get_feedbacks(db, skip=skip, limit=limit)
+def read_feedbacks(
+    skip: int = 0,
+    limit: int = 50,
+    name: Optional[str] = None,
+    passport_number: Optional[str] = None,
+    reference_number: Optional[str] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    db: Session = Depends(get_db)
+):
+    feedbacks = crud.get_feedbacks(
+        db,
+        skip=skip,
+        limit=limit,
+        name=name,
+        passport_number=passport_number,
+        reference_number=reference_number,
+        start_date=start_date,
+        end_date=end_date,
+    )
+    return feedbacks
 
 @router.get("/feedbacks/{feedback_id}", response_model=schemas.FeedbackOut)
 def read_feedback(feedback_id: str, db: Session = Depends(get_db)):

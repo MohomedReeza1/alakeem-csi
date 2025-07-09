@@ -10,9 +10,9 @@ app = FastAPI(
 
 # CORS configuration
 origins = [
-    "http://localhost:5173",  # Vite dev
+    "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://your-frontend-domain.vercel.app",  # Replace with your Vercel URL
+    "https://your-frontend-domain.vercel.app",
 ]
 
 app.add_middleware(

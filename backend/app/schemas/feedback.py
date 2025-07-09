@@ -24,3 +24,6 @@ class FeedbackOut(FeedbackBase):
 
     class Config:
         orm_mode = True
+
+class FeedbackResponse(BaseModel):
+    message: str

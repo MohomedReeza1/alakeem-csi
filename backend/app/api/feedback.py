@@ -13,9 +13,10 @@ def get_db():
     finally:
         db.close()
 
-@router.post("/feedback", response_model=schemas.FeedbackOut)
+@router.post("/feedback", response_model=schemas.FeedbackResponse)
 def create_feedback(feedback: schemas.FeedbackCreate, db: Session = Depends(get_db)):
-    return crud.create_feedback(db, feedback)
+    crud.create_feedback(db, feedback)
+    return {"message": "Feedback submitted successfully"}
 
 @router.get("/feedbacks", response_model=List[schemas.FeedbackOut])
 def read_feedbacks(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):

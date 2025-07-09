@@ -26,8 +26,9 @@ export default function FeedbackForm() {
     comment: "",
   });
 
-  const handleNext = () => step < 8 && setStep(step + 1);
+  const handleNext = () => step < 9 && setStep(step + 1);
   const handleBack = () => step > 0 && setStep(step - 1);
+
   const handleRating = (index, value) => {
     const updated = [...form.ratings];
     updated[index] = value;
@@ -55,7 +56,6 @@ export default function FeedbackForm() {
   return (
     <>
       <FeedbackHeader />
-
       <div className="flex flex-col items-center justify-start px-4 pt-6 overflow-hidden h-[calc(100vh-115px)]">
         <h1 className="text-3xl sm:text-3xl font-medium text-gray-800 text-center mb-6">
           Can You Please Rate Us
@@ -84,7 +84,6 @@ export default function FeedbackForm() {
                 onChange={(e) => setForm({ ...form, reference: e.target.value })}
               />
             </div>
-
             <div className="mt-8 flex justify-center">
               <button
                 className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition"
@@ -96,28 +95,20 @@ export default function FeedbackForm() {
           </div>
         )}
 
-        {/* Rating Steps */}
+        {/* Step 1–7 – Ratings */}
         {step >= 1 && step <= 7 && (
           <div className="relative w-full max-w-5xl mx-auto flex items-center justify-center px-4">
             <IconButton
               onClick={handleBack}
               className="!absolute -left-16 hover:scale-110 transition-transform"
-              sx={{
-                width: 56,
-                height: 56,
-                borderRadius: '9999px',
-                border: '2px solid #d1d5dc',
-                backgroundColor: '#ffffff',
-              }}
+              sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc", backgroundColor: "#ffffff" }}
             >
-              <ArrowBackIosNewIcon sx={{ color: '#4a5565' }} />
+              <ArrowBackIosNewIcon sx={{ color: "#4a5565" }} />
             </IconButton>
-
             <div className="bg-white rounded-2xl shadow-lg w-full max-w-4xl p-8 sm:p-12 min-h-[480px] mx-auto flex flex-col justify-center text-center">
-              <p className="text-2xl sm:text-3xl text-gray-600 mb-2 break-words">{criteriaLabels[step - 1].si}</p>
+              <p className="text-2xl sm:text-3xl text-gray-600 mb-2">{criteriaLabels[step - 1].si}</p>
               <h3 className="text-3xl sm:text-4xl font-bold mb-3">{criteriaLabels[step - 1].en}</h3>
-              <p className="text-xl sm:text-2xl text-gray-600 mb-4 break-words">{criteriaLabels[step - 1].ta}</p>
-
+              <p className="text-xl sm:text-2xl text-gray-600 mb-4">{criteriaLabels[step - 1].ta}</p>
               <div className="flex justify-center gap-4 mb-4">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -125,28 +116,18 @@ export default function FeedbackForm() {
                     onClick={() => handleRating(step - 1, star)}
                     className="text-8xl transition-transform duration-200 hover:scale-110"
                   >
-                    <span className={star <= form.ratings[step - 1] ? "text-yellow-400" : "text-gray-300"}>
-                      ★
-                    </span>
+                    <span className={star <= form.ratings[step - 1] ? "text-yellow-400" : "text-gray-300"}>★</span>
                   </button>
                 ))}
               </div>
-
-              <p className="text-gray-600 mt-auto pt-6">Step {step + 1} of 9</p>
+              <p className="text-gray-600 mt-auto pt-6">Step {step + 1} of 10</p>
             </div>
-
             <IconButton
               onClick={handleNext}
               className="!absolute -right-16 hover:scale-110 transition-transform"
-              sx={{
-                width: 56,
-                height: 56,
-                borderRadius: '9999px',
-                border: '2px solid #d1d5dc',
-                backgroundColor: '#ffffff',
-              }}
+              sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc", backgroundColor: "#ffffff" }}
             >
-              <ArrowForwardIosIcon sx={{ color: '#4a5565' }} />
+              <ArrowForwardIosIcon sx={{ color: "#4a5565" }} />
             </IconButton>
           </div>
         )}
@@ -157,39 +138,56 @@ export default function FeedbackForm() {
             <IconButton
               onClick={handleBack}
               className="!absolute -left-16 hover:scale-110 transition-transform"
-              sx={{
-                width: 56,
-                height: 56,
-                borderRadius: '9999px',
-                border: '2px solid #d1d5dc',
-                backgroundColor: '#ffffff',
-              }}
+              sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc", backgroundColor: "#ffffff" }}
             >
-              <ArrowBackIosNewIcon sx={{ color: '#4a5565' }} />
+              <ArrowBackIosNewIcon sx={{ color: "#4a5565" }} />
             </IconButton>
-
             <div className="bg-white rounded-2xl shadow-lg w-full max-w-4xl p-8 sm:p-12 min-h-[480px] mx-auto flex flex-col justify-center">
               <h3 className="text-2xl font-bold mb-6 text-center">Leave a Comment (Optional)</h3>
               <textarea
-                className="w-full min-h-[120px] p-4 border rounded-xl mb-4"
-                placeholder="Your comment..."
+                className="w-full min-h-[240px] p-4 border rounded-xl mb-4"
+                placeholder="Your comment.. ."
                 value={form.comment}
                 onChange={(e) => setForm({ ...form, comment: e.target.value })}
               />
-              <div className="mt-4 flex justify-center">
-                <button
-                  onClick={handleSubmit}
-                  disabled={loading}
-                  className="bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition"
-                >
-                  {loading && (
-                    <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2 inline-block align-middle"></span>
-                  )}
-                  Submit Feedback
-                </button>
-              </div>
+              <p className="text-gray-600 mt-auto pt-6 text-center">Step {step + 1} of 10</p>
             </div>
+            <IconButton
+              onClick={handleNext}
+              className="!absolute -right-16 hover:scale-110 transition-transform"
+              sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc", backgroundColor: "#ffffff" }}
+            >
+              <ArrowForwardIosIcon sx={{ color: "#4a5565" }} />
+            </IconButton>
           </div>
+        )}
+
+        {/* Step 9 – Submit */}
+        {step === 9 && (
+          <div className="relative w-full max-w-5xl mx-auto flex items-center justify-center px-4">
+            <IconButton
+              onClick={handleBack}
+              className="!absolute -left-16 hover:scale-110 transition-transform"
+              sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc", backgroundColor: "#ffffff" }}
+            >
+              <ArrowBackIosNewIcon sx={{ color: "#4a5565" }} />
+            </IconButton>
+            <div className="bg-white rounded-2xl shadow-lg w-full max-w-4xl p-8 sm:p-12 min-h-[480px] mx-auto flex flex-col justify-center items-center text-center">
+              <h3 className="text-3xl font-bold mb-6">Ready to Submit?</h3>
+              <button 
+                onClick={handleSubmit}
+                disabled={loading}
+                className="bg-indigo-600 text-white py-4 px-10 rounded-lg hover:bg-indigo-700 transition text-3xl font-semibold"
+                
+              >
+                {loading ? (
+                  <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full inline-block"></span>
+                ) : (
+                  "Submit Feedback"
+                )}
+              </button> 
+            </div>
+          </div>  
         )}
       </div>
     </>

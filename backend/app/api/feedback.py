@@ -43,6 +43,10 @@ def read_feedbacks(
     )
     return feedbacks
 
+@router.get("/feedbacks/average")
+def get_average_feedbacks(db: Session = Depends(get_db)):
+    return crud.get_average_per_criteria(db)
+
 @router.get("/feedbacks/{feedback_id}", response_model=schemas.FeedbackOut)
 def read_feedback(feedback_id: str, db: Session = Depends(get_db)):
     feedback = crud.get_feedback_by_id(db, feedback_id)
@@ -50,6 +54,3 @@ def read_feedback(feedback_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Feedback not found")
     return feedback
 
-@router.get("/feedbacks/average")
-def get_average_feedbacks(db: Session = Depends(get_db)):
-    return crud.get_average_per_criteria(db)

@@ -13,11 +13,11 @@ import {
   InputLabel,
   FormControl,
   Collapse,
+  Rating,
+  Box,
 } from "@mui/material";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
-import StarIcon from "@mui/icons-material/Star";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
 
 export default function Dashboard() {
   const { token, role } = useAuth();
@@ -28,12 +28,10 @@ export default function Dashboard() {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showDetailedRatings, setShowDetailedRatings] = useState(false);
 
-  // Filters - Basic
+  // Filters
   const [name, setName] = useState("");
   const [passportNumber, setPassportNumber] = useState("");
   const [referenceNumber, setReferenceNumber] = useState("");
-
-  // Filters - Advanced
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [minRating, setMinRating] = useState(1);
@@ -74,13 +72,8 @@ export default function Dashboard() {
         params,
       });
 
-      if (Array.isArray(res.data)) {
-        setFeedbacks(res.data);
-      } else if (res.data && Array.isArray(res.data.results)) {
-        setFeedbacks(res.data.results);
-      } else {
-        setFeedbacks([]);
-      }
+      setFeedbacks(Array.isArray(res.data) ? res.data :
+        res.data?.results ?? []);
     } catch (err) {
       console.error("Failed to fetch feedbacks", err);
       setFeedbacks([]);
@@ -107,14 +100,56 @@ export default function Dashboard() {
     fetchFeedbacks();
   };
 
+  const renderStars = (value) => (
+    <Box display="flex" justifyContent="center">
+      <Rating value={value || 0} readOnly />
+    </Box>
+  );
+
   const detailedColumns = [
-    { field: "criteria_1", headerName: "Welcome", flex: 1 },
-    { field: "criteria_2", headerName: "Friendliness", flex: 1 },
-    { field: "criteria_3", headerName: "Information", flex: 1 },
-    { field: "criteria_4", headerName: "Hospitality", flex: 1 },
-    { field: "criteria_5", headerName: "Time Taken", flex: 1 },
-    { field: "criteria_6", headerName: "Satisfaction Compared to Others", flex: 1 },
-    { field: "criteria_7", headerName: "Overall Satisfaction", flex: 1 },
+    { field: "name", headerName: "Name", flex: 1 },
+    {
+      field: "criteria_1",
+      headerName: "Welcome",
+      flex: 1,
+      renderCell: (params) => renderStars(params.value),
+    },
+    {
+      field: "criteria_2",
+      headerName: "Friendliness",
+      flex: 1,
+      renderCell: (params) => renderStars(params.value),
+    },
+    {
+      field: "criteria_3",
+      headerName: "Information",
+      flex: 1,
+      renderCell: (params) => renderStars(params.value),
+    },
+    {
+      field: "criteria_4",
+      headerName: "Hospitality",
+      flex: 1,
+      renderCell: (params) => renderStars(params.value),
+    },
+    {
+      field: "criteria_5",
+      headerName: "Time Taken",
+      flex: 1,
+      renderCell: (params) => renderStars(params.value),
+    },
+    {
+      field: "criteria_6",
+      headerName: "Satisfaction Compared to Others",
+      flex: 1,
+      renderCell: (params) => renderStars(params.value),
+    },
+    {
+      field: "criteria_7",
+      headerName: "Overall Satisfaction",
+      flex: 1,
+      renderCell: (params) => renderStars(params.value),
+    },
   ];
 
   const baseColumns = [
@@ -130,58 +165,48 @@ export default function Dashboard() {
     { field: "name", headerName: "Name", flex: 1 },
     { field: "passport_number", headerName: "Passport No", flex: 1 },
     { field: "reference_number", headerName: "Ref No", flex: 1 },
+    { field: "comment", headerName: "Comment", flex: 2 },
     {
-      field: "overall_rating",
+      field: "criteria_7",
       headerName: "Overall Rating",
       flex: 1,
-      renderCell: (params) => {
-        const rating = params.row.criteria_7 || 0;
-        return (
-          <div className="flex">
-            {[1, 2, 3, 4, 5].map((star) =>
-              star <= rating ? (
-                <StarIcon key={star} style={{ color: "#facc15" }} />
-              ) : (
-                <StarBorderIcon key={star} style={{ color: "#d1d5db" }} />
-              )
-            )}
-          </div>
-        );
-      },
+      renderCell: (params) => renderStars(params.value),
     },
-    { field: "comment", headerName: "Comment", flex: 2 },
   ];
 
-  const columns = showDetailedRatings
-    ? [...baseColumns.slice(0, 5), ...detailedColumns, baseColumns[5]]
-    : baseColumns;
+  const columns = showDetailedRatings ? detailedColumns : baseColumns;
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      <main className="p-4 max-w-7xl mx-auto">
-        <h2 className="text-2xl font-semibold mb-4 text-center">CSI Admin Dashboard</h2>
+      <main className="p-2 sm:p-4 max-w-7xl mx-auto">
+        <h2 className="text-2xl font-semibold mb-4 text-center">
+          CSI Admin Dashboard
+        </h2>
 
         {/* Filters */}
-        <div className="bg-white p-4 rounded-xl shadow mb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="bg-white p-4 rounded-xl shadow mb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
           <TextField
             label="Search Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             size="small"
+            fullWidth
           />
           <TextField
             label="Search Passport"
             value={passportNumber}
             onChange={(e) => setPassportNumber(e.target.value)}
             size="small"
+            fullWidth
           />
           <TextField
             label="Search Reference"
             value={referenceNumber}
             onChange={(e) => setReferenceNumber(e.target.value)}
             size="small"
+            fullWidth
           />
           <Button
             variant="outlined"
@@ -194,7 +219,7 @@ export default function Dashboard() {
 
         {/* Advanced Filters */}
         <Collapse in={showAdvanced}>
-          <div className="bg-white p-4 rounded-xl shadow mb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="bg-white p-4 rounded-xl shadow mb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DatePicker
                 label="Start Date"
@@ -252,8 +277,8 @@ export default function Dashboard() {
           </div>
         </Collapse>
 
-        {/* Filter Buttons and Toggle Detailed Ratings */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-2 mb-4">
+        {/* Buttons */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-2 mb-4 w-full">
           <div className="flex gap-2">
             <Button
               variant="contained"
@@ -281,7 +306,7 @@ export default function Dashboard() {
         </div>
 
         {/* Data Table */}
-        <div className="bg-white p-4 rounded-xl shadow">
+        <div className="bg-white p-2 sm:p-4 rounded-xl shadow w-full overflow-x-auto">
           <DataGrid
             rows={feedbacks}
             columns={columns}
@@ -292,6 +317,7 @@ export default function Dashboard() {
               pagination: { paginationModel: { pageSize: pageSize } },
             }}
             autoHeight
+            disableColumnMenu
           />
         </div>
       </main>

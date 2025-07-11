@@ -154,7 +154,7 @@ export default function Dashboard() {
       <Header />
 
       <main className="p-4 max-w-7xl mx-auto">
-        <h2 className="text-xl font-semibold mb-4 text-center">CSI Admin Dashboard</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-center">CSI Admin Dashboard</h2>
 
         {/* Basic Filters */}
         <div className="bg-white p-4 rounded-xl shadow mb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

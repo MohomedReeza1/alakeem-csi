@@ -26,8 +26,6 @@ export default function Analytics() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("Token:", token);
-    console.log("Role:", role);
     if (!token || role !== "admin") {
       navigate("/login");
     } else {

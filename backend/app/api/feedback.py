@@ -42,7 +42,7 @@ def create_feedback(feedback: schemas.FeedbackCreate, db: Session = Depends(get_
 @router.get("/feedbacks", response_model=List[schemas.FeedbackOut])
 def read_feedbacks(
     skip: int = 0,
-    limit: int = 15,
+    limit: int = 10,
     name: Optional[str] = None,
     passport_number: Optional[str] = None,
     reference_number: Optional[str] = None,

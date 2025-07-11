@@ -22,28 +22,11 @@ export default function Login() {
     setError('');
 
     try {
-      // ✅ TEMP: Simulate API call with hardcoded check
-      if (username === 'admin' && password === 'password') {
-        const dummyToken = 'dummy-jwt-token';
-        const dummyRole = 'admin';
-
-        localStorage.setItem('token', dummyToken);
-        localStorage.setItem('role', dummyRole);
-        login(dummyToken, dummyRole);
-        return;
-      }
-
       setError('Invalid credentials');
 
-      // 🔒 REAL API CALL (Enable after backend is ready)
-      /*
       const res = await api.post('/auth/login', { username, password });
       const { access_token, role } = res.data;
-
-      localStorage.setItem('token', access_token);
-      localStorage.setItem('role', role);
       login(access_token, role);
-      */
 
     } catch (err) {
       setError('Login failed. Please try again.');

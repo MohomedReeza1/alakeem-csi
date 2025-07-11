@@ -21,6 +21,7 @@ function App() {
         }
       />
     </Routes>
+    <Route path="/analytics" element={<Analytics />} />
     </>
   )
 }

@@ -1,18 +1,23 @@
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import logo from '../assets/Al Akeem Logo.png';
 
 export default function Header() {
   const { logout, role } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleTogglePage = () => {
+    if (location.pathname === '/dashboard') {
+      navigate('/analytics');
+    } else {
+      navigate('/dashboard');
+    }
+  };
 
   const handleLogout = () => {
     logout();
     navigate('/login');
-  };
-
-  const handleAnalytics = () => {
-    navigate('/analytics');
   };
 
   return (
@@ -30,10 +35,10 @@ export default function Header() {
 
       <div className="flex items-center gap-4">
         <button
-          onClick={handleAnalytics}
+          onClick={handleTogglePage}
           className="bg-indigo-700 hover:bg-indigo-800 text-white px-4 py-2 rounded"
         >
-          Analytics
+          {location.pathname === '/dashboard' ? 'Analytics' : 'Dashboard'}
         </button>
         <p className="text-white text-sm">
           Logged in as:{' '}

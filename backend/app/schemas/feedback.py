@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
+from datetime import date
 from uuid import UUID
 
 class FeedbackBase(BaseModel):
@@ -21,7 +21,7 @@ class FeedbackCreate(FeedbackBase):
 
 class FeedbackOut(FeedbackBase):
     id: UUID
-    created_at: datetime
+    created_at: date
 
     class Config:
         orm_mode = True

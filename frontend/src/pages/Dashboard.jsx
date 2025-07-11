@@ -16,6 +16,8 @@ import {
 } from "@mui/material";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import StarIcon from "@mui/icons-material/Star";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
 
 export default function Dashboard() {
   const { token, role } = useAuth();
@@ -23,6 +25,8 @@ export default function Dashboard() {
 
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showDetailedRatings, setShowDetailedRatings] = useState(false);
 
   // Filters - Basic
   const [name, setName] = useState("");
@@ -37,9 +41,6 @@ export default function Dashboard() {
   const [criterion, setCriterion] = useState("");
   const [criterionValue, setCriterionValue] = useState("");
 
-  const [showAdvanced, setShowAdvanced] = useState(false);
-
-  // Pagination
   const [page, setPage] = useState(0);
   const pageSize = 15;
 
@@ -106,10 +107,17 @@ export default function Dashboard() {
     fetchFeedbacks();
   };
 
-  const columns = [
-    { field: "name", headerName: "Name", flex: 1 },
-    { field: "passport_number", headerName: "Passport No", flex: 1 },
-    { field: "reference_number", headerName: "Ref No", flex: 1 },
+  const detailedColumns = [
+    { field: "criteria_1", headerName: "Welcome", flex: 1 },
+    { field: "criteria_2", headerName: "Friendliness", flex: 1 },
+    { field: "criteria_3", headerName: "Information", flex: 1 },
+    { field: "criteria_4", headerName: "Hospitality", flex: 1 },
+    { field: "criteria_5", headerName: "Time Taken", flex: 1 },
+    { field: "criteria_6", headerName: "Satisfaction Compared to Others", flex: 1 },
+    { field: "criteria_7", headerName: "Overall Satisfaction", flex: 1 },
+  ];
+
+  const baseColumns = [
     {
       field: "created_at",
       headerName: "Date",
@@ -119,35 +127,34 @@ export default function Dashboard() {
         return new Date(params.row.created_at).toLocaleDateString();
       },
     },
+    { field: "name", headerName: "Name", flex: 1 },
+    { field: "passport_number", headerName: "Passport No", flex: 1 },
+    { field: "reference_number", headerName: "Ref No", flex: 1 },
     {
-      field: "avg_rating",
-      headerName: "Avg Rating",
+      field: "overall_rating",
+      headerName: "Overall Rating",
       flex: 1,
-      valueGetter: (params) => {
-        if (!params?.row) return "-";
-        const {
-          criteria_1 = 0,
-          criteria_2 = 0,
-          criteria_3 = 0,
-          criteria_4 = 0,
-          criteria_5 = 0,
-          criteria_6 = 0,
-          criteria_7 = 0,
-        } = params.row || {};
-        const avg =
-          (criteria_1 +
-            criteria_2 +
-            criteria_3 +
-            criteria_4 +
-            criteria_5 +
-            criteria_6 +
-            criteria_7) /
-          7;
-        return avg ? avg.toFixed(2) : "-";
+      renderCell: (params) => {
+        const rating = params.row.criteria_7 || 0;
+        return (
+          <div className="flex">
+            {[1, 2, 3, 4, 5].map((star) =>
+              star <= rating ? (
+                <StarIcon key={star} style={{ color: "#facc15" }} />
+              ) : (
+                <StarBorderIcon key={star} style={{ color: "#d1d5db" }} />
+              )
+            )}
+          </div>
+        );
       },
     },
     { field: "comment", headerName: "Comment", flex: 2 },
   ];
+
+  const columns = showDetailedRatings
+    ? [...baseColumns.slice(0, 5), ...detailedColumns, baseColumns[5]]
+    : baseColumns;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -156,7 +163,7 @@ export default function Dashboard() {
       <main className="p-4 max-w-7xl mx-auto">
         <h2 className="text-2xl font-semibold mb-4 text-center">CSI Admin Dashboard</h2>
 
-        {/* Basic Filters */}
+        {/* Filters */}
         <div className="bg-white p-4 rounded-xl shadow mb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <TextField
             label="Search Name"
@@ -245,23 +252,31 @@ export default function Dashboard() {
           </div>
         </Collapse>
 
-        {/* Buttons */}
-        <div className="flex justify-end gap-2 mb-4">
+        {/* Filter Buttons and Toggle Detailed Ratings */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-2 mb-4">
+          <div className="flex gap-2">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleFilter}
+              disabled={loading}
+            >
+              Apply Filters
+            </Button>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleReset}
+              disabled={loading}
+            >
+              Reset
+            </Button>
+          </div>
           <Button
-            variant="contained"
-            color="primary"
-            onClick={handleFilter}
-            disabled={loading}
+            variant="text"
+            onClick={() => setShowDetailedRatings(!showDetailedRatings)}
           >
-            Apply Filters
-          </Button>
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={handleReset}
-            disabled={loading}
-          >
-            Reset
+            {showDetailedRatings ? "Hide Detailed Ratings" : "Show Detailed Ratings"}
           </Button>
         </div>
 

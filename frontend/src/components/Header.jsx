@@ -11,6 +11,10 @@ export default function Header() {
     navigate('/login');
   };
 
+  const handleAnalytics = () => {
+    navigate('/analytics');
+  };
+
   return (
     <header className="bg-indigo-600 py-4 px-6 flex justify-between items-center shadow-md">
       <div className="flex items-center gap-3">
@@ -25,6 +29,12 @@ export default function Header() {
       </div>
 
       <div className="flex items-center gap-4">
+        <button
+          onClick={handleAnalytics}
+          className="bg-indigo-700 hover:bg-indigo-800 text-white px-4 py-2 rounded"
+        >
+          Analytics
+        </button>
         <p className="text-white text-sm">
           Logged in as:{' '}
           <span className="font-bold capitalize">

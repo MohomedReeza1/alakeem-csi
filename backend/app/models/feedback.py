@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, Date
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 import uuid
@@ -21,4 +21,4 @@ class Feedback(Base):
     criteria_6 = Column(Integer, nullable=False)
     criteria_7 = Column(Integer, nullable=False)
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(Date, server_default=func.current_date())

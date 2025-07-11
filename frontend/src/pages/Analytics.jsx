@@ -18,7 +18,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 export default function Analytics() {
-  const { token } = useAuth();
+  const { token, role } = useAuth();
   const navigate = useNavigate();
 
   const [monthlyData, setMonthlyData] = useState([]);
@@ -26,12 +26,14 @@ export default function Analytics() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!token) {
+    console.log("Token:", token);
+    console.log("Role:", role);
+    if (!token || role !== "admin") {
       navigate("/login");
     } else {
       fetchAnalytics();
     }
-  }, [token]);
+  }, [token, role]);
 
   const fetchAnalytics = async () => {
     try {

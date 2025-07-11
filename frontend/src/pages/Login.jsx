@@ -22,8 +22,6 @@ export default function Login() {
     setError('');
 
     try {
-      setError('Invalid credentials');
-
       const res = await api.post('/auth/login', { username, password });
       const { access_token, role } = res.data;
       login(access_token, role);

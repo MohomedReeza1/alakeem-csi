@@ -4,6 +4,7 @@ import FeedbackHeader from "../components/FeedbackHeader";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import api from "../api/axios"; // ✅ ensure this is configured
 
 const criteriaLabels = [
   { en: "Welcome", si: "පිළිගැනීම", ta: "ஏற்றுக்கொள்ளுதல்" },
@@ -40,14 +41,42 @@ export default function FeedbackForm() {
   };
 
   const handleSubmit = async () => {
+    // ✅ Simple validation
+    if (
+      !form.name.trim() ||
+      !form.passport.trim() ||
+      !form.reference.trim() ||
+      form.ratings.some(r => r === 0)
+    ) {
+      toast.error("Please complete all required fields and ratings before submitting.");
+      return;
+    }
+
     setLoading(true);
     try {
-      console.log("Submitted:", form);
+      // Prepare payload for backend
+      const payload = {
+        name: form.name,
+        passport_number: form.passport,
+        reference_number: form.reference,
+        comment: form.comment,
+        criteria_1: form.ratings[0],
+        criteria_2: form.ratings[1],
+        criteria_3: form.ratings[2],
+        criteria_4: form.ratings[3],
+        criteria_5: form.ratings[4],
+        criteria_6: form.ratings[5],
+        criteria_7: form.ratings[6],
+      };
+
+      await api.post("/feedback", payload);
       toast.success("🎉 Thank you for your feedback!");
+
       setForm({ name: "", passport: "", reference: "", ratings: Array(7).fill(0), comment: "" });
       setStep(0);
     } catch (err) {
-      toast.error("Submission failed!");
+      console.error(err);
+      toast.error("Submission failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -64,34 +93,43 @@ export default function FeedbackForm() {
         {/* Step 0 – Personal Info */}
         {step === 0 && (
           <div className="bg-white rounded-2xl shadow-lg w-full max-w-4xl p-8 sm:p-12 min-h-[480px] mx-auto flex flex-col justify-center">
-            <div className="space-y-8">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleNext();
+              }}
+              className="space-y-8"
+            >
               <input
                 className="w-full py-3 px-4 text-lg border rounded-xl"
                 placeholder="Full Name"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
+                required
               />
               <input
                 className="w-full py-3 px-4 text-lg border rounded-xl"
                 placeholder="Passport Number"
                 value={form.passport}
                 onChange={(e) => setForm({ ...form, passport: e.target.value })}
+                required
               />
               <input
                 className="w-full py-3 px-4 text-lg border rounded-xl"
                 placeholder="Reference Number"
                 value={form.reference}
                 onChange={(e) => setForm({ ...form, reference: e.target.value })}
+                required
               />
-            </div>
-            <div className="mt-8 flex justify-center">
-              <button
-                className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition"
-                onClick={handleNext}
-              >
-                Next
-              </button>
-            </div>
+              <div className="mt-8 flex justify-center">
+                <button
+                  type="submit"
+                  className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition"
+                >
+                  Next
+                </button>
+              </div>
+            </form>
           </div>
         )}
 
@@ -146,7 +184,7 @@ export default function FeedbackForm() {
               <h3 className="text-2xl font-bold mb-6 text-center">Leave a Comment (Optional)</h3>
               <textarea
                 className="w-full min-h-[240px] p-4 border rounded-xl mb-4"
-                placeholder="Your comment.. ."
+                placeholder="Your comment..."
                 value={form.comment}
                 onChange={(e) => setForm({ ...form, comment: e.target.value })}
               />
@@ -174,20 +212,19 @@ export default function FeedbackForm() {
             </IconButton>
             <div className="bg-white rounded-2xl shadow-lg w-full max-w-4xl p-8 sm:p-12 min-h-[480px] mx-auto flex flex-col justify-center items-center text-center">
               <h3 className="text-3xl font-bold mb-6">Ready to Submit?</h3>
-              <button 
+              <button
                 onClick={handleSubmit}
                 disabled={loading}
                 className="bg-indigo-600 text-white py-4 px-10 rounded-lg hover:bg-indigo-700 transition text-3xl font-semibold"
-                
               >
                 {loading ? (
                   <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full inline-block"></span>
                 ) : (
                   "Submit Feedback"
                 )}
-              </button> 
+              </button>
             </div>
-          </div>  
+          </div>
         )}
       </div>
     </>

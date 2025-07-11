@@ -1,6 +1,5 @@
-from sqlalchemy import Column, Integer, String, Date
+from sqlalchemy import Column, Integer, String, Date, func
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.sql import func
 import uuid
 from app.db import Base
 
@@ -21,4 +20,4 @@ class Feedback(Base):
     criteria_6 = Column(Integer, nullable=False)
     criteria_7 = Column(Integer, nullable=False)
 
-    created_at = Column(Date, server_default=func.current_date())
+    created_at = Column(Date, server_default=func.current_date(), nullable=False)

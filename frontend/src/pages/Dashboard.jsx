@@ -63,9 +63,20 @@ export default function Dashboard() {
         headers: { Authorization: `Bearer ${token}` },
         params,
       });
-      setFeedbacks(res.data);
+
+      console.log("Fetched feedbacks:", res.data);
+
+      if (Array.isArray(res.data)) {
+        setFeedbacks(res.data);
+      } else if (res.data && Array.isArray(res.data.results)) {
+        setFeedbacks(res.data.results);
+      } else {
+        console.error("Unexpected API response", res.data);
+        setFeedbacks([]);
+      }
     } catch (err) {
       console.error("Failed to fetch feedbacks", err);
+      setFeedbacks([]);
     } finally {
       setLoading(false);
     }
@@ -84,22 +95,26 @@ export default function Dashboard() {
       field: "created_at",
       headerName: "Date",
       flex: 1,
-      valueGetter: (params) => new Date(params.row.created_at).toLocaleDateString(),
+      valueGetter: (params) => {
+        if (!params?.row?.created_at) return "-";
+        return new Date(params.row.created_at).toLocaleDateString();
+      },
     },
     {
       field: "avg_rating",
       headerName: "Avg Rating",
       flex: 1,
       valueGetter: (params) => {
+        if (!params?.row) return "-";
         const {
-          criteria_1,
-          criteria_2,
-          criteria_3,
-          criteria_4,
-          criteria_5,
-          criteria_6,
-          criteria_7,
-        } = params.row;
+          criteria_1 = 0,
+          criteria_2 = 0,
+          criteria_3 = 0,
+          criteria_4 = 0,
+          criteria_5 = 0,
+          criteria_6 = 0,
+          criteria_7 = 0,
+        } = params.row || {};
         const avg =
           (criteria_1 +
             criteria_2 +
@@ -109,7 +124,7 @@ export default function Dashboard() {
             criteria_6 +
             criteria_7) /
           7;
-        return avg.toFixed(2);
+        return avg ? avg.toFixed(2) : "-";
       },
     },
     { field: "comment", headerName: "Comment", flex: 2 },
@@ -202,9 +217,10 @@ export default function Dashboard() {
             columns={columns}
             getRowId={(row) => row.id}
             loading={loading}
-            pageSizeOptions={[10, 15, 20, 50, 100]} 
-            pagination
-            // rowCount={feedbacks.length}
+            pageSizeOptions={[10, 15, 20, 50, 100]}
+            initialState={{
+              pagination: { paginationModel: { pageSize: pageSize } },
+            }}
             autoHeight
           />
         </div>

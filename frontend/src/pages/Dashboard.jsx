@@ -40,7 +40,7 @@ export default function Dashboard() {
   const [criterionValue, setCriterionValue] = useState("");
 
   const [page, setPage] = useState(0);
-  const pageSize = 5;
+  const pageSize = 10;
 
   useEffect(() => {
     if (!token || role !== "admin") {
@@ -157,7 +157,6 @@ export default function Dashboard() {
       field: "created_at",
       headerName: "Date",
       flex: 1,
-      valueGetter: (params) => params?.row?.created_at || "-"
     },
     { field: "name", headerName: "Name", flex: 1 },
     { field: "passport_number", headerName: "Passport No", flex: 1 },

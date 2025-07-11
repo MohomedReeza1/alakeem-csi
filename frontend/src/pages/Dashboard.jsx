@@ -12,6 +12,7 @@ import {
   Select,
   InputLabel,
   FormControl,
+  Collapse,
 } from "@mui/material";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
@@ -23,14 +24,20 @@ export default function Dashboard() {
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Filters
+  // Filters - Basic
   const [name, setName] = useState("");
+  const [passportNumber, setPassportNumber] = useState("");
+  const [referenceNumber, setReferenceNumber] = useState("");
+
+  // Filters - Advanced
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [minRating, setMinRating] = useState(1);
   const [maxRating, setMaxRating] = useState(5);
   const [criterion, setCriterion] = useState("");
   const [criterionValue, setCriterionValue] = useState("");
+
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Pagination
   const [page, setPage] = useState(0);
@@ -52,6 +59,8 @@ export default function Dashboard() {
         limit: pageSize,
       };
       if (name) params.name = name;
+      if (passportNumber) params.passport_number = passportNumber;
+      if (referenceNumber) params.reference_number = referenceNumber;
       if (startDate) params.start_date = startDate.toISOString().split("T")[0];
       if (endDate) params.end_date = endDate.toISOString().split("T")[0];
       if (minRating) params.min_rating = minRating;
@@ -64,14 +73,11 @@ export default function Dashboard() {
         params,
       });
 
-      console.log("Fetched feedbacks:", res.data);
-
       if (Array.isArray(res.data)) {
         setFeedbacks(res.data);
       } else if (res.data && Array.isArray(res.data.results)) {
         setFeedbacks(res.data.results);
       } else {
-        console.error("Unexpected API response", res.data);
         setFeedbacks([]);
       }
     } catch (err) {
@@ -84,6 +90,19 @@ export default function Dashboard() {
 
   const handleFilter = () => {
     setPage(0);
+    fetchFeedbacks();
+  };
+
+  const handleReset = () => {
+    setName("");
+    setPassportNumber("");
+    setReferenceNumber("");
+    setStartDate(null);
+    setEndDate(null);
+    setMinRating(1);
+    setMaxRating(5);
+    setCriterion("");
+    setCriterionValue("");
     fetchFeedbacks();
   };
 
@@ -137,69 +156,97 @@ export default function Dashboard() {
       <main className="p-4 max-w-7xl mx-auto">
         <h2 className="text-xl font-semibold mb-4 text-center">CSI Admin Dashboard</h2>
 
-        {/* Filters */}
-        <div className="bg-white p-4 rounded-xl shadow mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Basic Filters */}
+        <div className="bg-white p-4 rounded-xl shadow mb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <TextField
             label="Search Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             size="small"
           />
+          <TextField
+            label="Search Passport"
+            value={passportNumber}
+            onChange={(e) => setPassportNumber(e.target.value)}
+            size="small"
+          />
+          <TextField
+            label="Search Reference"
+            value={referenceNumber}
+            onChange={(e) => setReferenceNumber(e.target.value)}
+            size="small"
+          />
+          <Button
+            variant="outlined"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="col-span-1 md:col-span-2 lg:col-span-3"
+          >
+            {showAdvanced ? "Hide Advanced Filters" : "Show Advanced Filters"}
+          </Button>
+        </div>
 
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <DatePicker
-              label="Start Date"
-              value={startDate}
-              onChange={setStartDate}
-              slotProps={{ textField: { size: "small" } }}
-            />
-            <DatePicker
-              label="End Date"
-              value={endDate}
-              onChange={setEndDate}
-              slotProps={{ textField: { size: "small" } }}
-            />
-          </LocalizationProvider>
+        {/* Advanced Filters */}
+        <Collapse in={showAdvanced}>
+          <div className="bg-white p-4 rounded-xl shadow mb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker
+                label="Start Date"
+                value={startDate}
+                onChange={setStartDate}
+                slotProps={{ textField: { size: "small", fullWidth: true } }}
+              />
+              <DatePicker
+                label="End Date"
+                value={endDate}
+                onChange={setEndDate}
+                slotProps={{ textField: { size: "small", fullWidth: true } }}
+              />
+            </LocalizationProvider>
 
-          <div className="col-span-1 md:col-span-2 lg:col-span-1">
-            <p className="text-sm text-gray-600">Rating Range</p>
-            <Slider
-              value={[minRating, maxRating]}
-              onChange={(e, newValue) => {
-                setMinRating(newValue[0]);
-                setMaxRating(newValue[1]);
-              }}
-              min={1}
-              max={5}
-              valueLabelDisplay="auto"
+            <div className="col-span-1 md:col-span-2 lg:col-span-1">
+              <p className="text-sm text-gray-600">Rating Range</p>
+              <Slider
+                value={[minRating, maxRating]}
+                onChange={(e, newValue) => {
+                  setMinRating(newValue[0]);
+                  setMaxRating(newValue[1]);
+                }}
+                min={1}
+                max={5}
+                valueLabelDisplay="auto"
+              />
+            </div>
+
+            <FormControl size="small" fullWidth>
+              <InputLabel>Criterion</InputLabel>
+              <Select
+                value={criterion}
+                label="Criterion"
+                onChange={(e) => setCriterion(e.target.value)}
+              >
+                <MenuItem value="">None</MenuItem>
+                {[...Array(7)].map((_, i) => (
+                  <MenuItem key={i} value={`criteria_${i + 1}`}>
+                    Criteria {i + 1}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <TextField
+              label="Criterion Value"
+              type="number"
+              size="small"
+              value={criterionValue}
+              onChange={(e) => setCriterionValue(e.target.value)}
+              disabled={!criterion}
+              fullWidth
             />
           </div>
+        </Collapse>
 
-          <FormControl size="small">
-            <InputLabel>Criterion</InputLabel>
-            <Select
-              value={criterion}
-              label="Criterion"
-              onChange={(e) => setCriterion(e.target.value)}
-            >
-              <MenuItem value="">None</MenuItem>
-              {[...Array(7)].map((_, i) => (
-                <MenuItem key={i} value={`criteria_${i + 1}`}>
-                  Criteria {i + 1}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <TextField
-            label="Criterion Value"
-            type="number"
-            size="small"
-            value={criterionValue}
-            onChange={(e) => setCriterionValue(e.target.value)}
-            disabled={!criterion}
-          />
-
+        {/* Buttons */}
+        <div className="flex justify-end gap-2 mb-4">
           <Button
             variant="contained"
             color="primary"
@@ -207,6 +254,14 @@ export default function Dashboard() {
             disabled={loading}
           >
             Apply Filters
+          </Button>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={handleReset}
+            disabled={loading}
+          >
+            Reset
           </Button>
         </div>
 

@@ -5,3 +5,4 @@ venv/
 *.pyc
 *.sqlite3
 alembic/versions/
+/node_modules

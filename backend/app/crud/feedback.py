@@ -14,7 +14,7 @@ def create_feedback(db: Session, feedback: schemas.FeedbackCreate):
 def get_feedbacks(
     db: Session,
     skip: int = 0,
-    limit: int = 15,
+    limit: int = 10,
     name: Optional[str] = None,
     passport_number: Optional[str] = None,
     reference_number: Optional[str] = None,

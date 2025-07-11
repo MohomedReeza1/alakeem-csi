@@ -157,12 +157,7 @@ export default function Dashboard() {
       field: "created_at",
       headerName: "Date",
       flex: 1,
-      valueGetter: (params) => {
-        const createdAt = params?.row?.created_at;
-        if (!createdAt) return "-";
-        // If createdAt = "2025-07-11T18:01:04.946882+05:30" or "2025-07-11 18:01:04.946882+05:30"
-        return createdAt.split("T")[0] || createdAt.split(" ")[0] || "-";
-      },
+      valueGetter: (params) => params?.row?.created_at || "-"
     },
     { field: "name", headerName: "Name", flex: 1 },
     { field: "passport_number", headerName: "Passport No", flex: 1 },

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from app import models, schemas
 from typing import List, Optional
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, extract
 from datetime import date
 
 def create_feedback(db: Session, feedback: schemas.FeedbackCreate):
@@ -83,3 +83,26 @@ def get_average_per_criteria(db: Session):
         "criteria_6": round(averages[5] or 0, 2),
         "criteria_7": round(averages[6] or 0, 2),
     }
+
+def get_monthly_feedback_counts(db: Session):
+    results = db.query(
+        extract('year', models.Feedback.created_at).label('year'),
+        extract('month', models.Feedback.created_at).label('month'),
+        func.count(models.Feedback.id)
+    ).group_by('year', 'month').order_by('year', 'month').all()
+
+    monthly_counts = [{"year": int(r[0]), "month": int(r[1]), "count": r[2]} for r in results]
+    return monthly_counts
+
+def get_top_complaints(db: Session, limit: int = 5):
+    avg_rating_expr = (
+        (models.Feedback.criteria_1 + models.Feedback.criteria_2 + models.Feedback.criteria_3 +
+         models.Feedback.criteria_4 + models.Feedback.criteria_5 + models.Feedback.criteria_6 +
+         models.Feedback.criteria_7) / 7
+    )
+
+    feedbacks = db.query(models.Feedback).filter(models.Feedback.comment != None).order_by(
+        avg_rating_expr.asc()
+    ).limit(limit).all()
+
+    return feedbacks

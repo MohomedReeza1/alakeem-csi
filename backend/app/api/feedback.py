@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from app import schemas, models, crud
 from app.db import SessionLocal
 from datetime import date
-from typing import Optional
 
 router = APIRouter()
 
@@ -14,6 +13,26 @@ def get_db():
         yield db
     finally:
         db.close()
+
+@router.get("/feedbacks/average")
+def get_average_feedbacks(db: Session = Depends(get_db)):
+    return crud.get_average_per_criteria(db)
+
+@router.get("/feedbacks/monthly_counts")
+def get_monthly_feedback_counts(db: Session = Depends(get_db)):
+    return crud.get_monthly_feedback_counts(db)
+
+@router.get("/feedbacks/top_complaints", response_model=List[schemas.FeedbackOut])
+def get_top_complaints(db: Session = Depends(get_db), limit: int = 5):
+    feedbacks = crud.get_top_complaints(db, limit)
+    return feedbacks
+
+@router.get("/feedbacks/{feedback_id}", response_model=schemas.FeedbackOut)
+def read_feedback(feedback_id: str, db: Session = Depends(get_db)):
+    feedback = crud.get_feedback_by_id(db, feedback_id)
+    if not feedback:
+        raise HTTPException(status_code=404, detail="Feedback not found")
+    return feedback
 
 @router.post("/feedback", response_model=schemas.FeedbackResponse)
 def create_feedback(feedback: schemas.FeedbackCreate, db: Session = Depends(get_db)):
@@ -50,15 +69,3 @@ def read_feedbacks(
         criterion_value=criterion_value
     )
     return feedbacks
-
-@router.get("/feedbacks/average")
-def get_average_feedbacks(db: Session = Depends(get_db)):
-    return crud.get_average_per_criteria(db)
-
-@router.get("/feedbacks/{feedback_id}", response_model=schemas.FeedbackOut)
-def read_feedback(feedback_id: str, db: Session = Depends(get_db)):
-    feedback = crud.get_feedback_by_id(db, feedback_id)
-    if not feedback:
-        raise HTTPException(status_code=404, detail="Feedback not found")
-    return feedback
-

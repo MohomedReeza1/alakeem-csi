@@ -4,6 +4,7 @@ import { Toaster } from "react-hot-toast"
 import Login from './pages/Login'
 import FeedbackForm from './pages/FeedbackForm'
 import Dashboard from "./pages/Dashboard";
+import Analytics from "./pages/Analytics";
 
 function App() {
   return (
@@ -20,8 +21,9 @@ function App() {
           </PrivateRoute>
         }
       />
+      <Route path="/analytics" element={<Analytics />} />
     </Routes>
-    <Route path="/analytics" element={<Analytics />} />
+    
     </>
   )
 }

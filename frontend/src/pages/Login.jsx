@@ -13,7 +13,7 @@ export default function Login() {
 
   useEffect(() => {
     if (token && role === 'admin') {
-      navigate('/dashboard');
+      navigate('/analytics');
     }
   }, [token, role]);
 

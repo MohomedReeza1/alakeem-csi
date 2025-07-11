@@ -40,7 +40,7 @@ export default function Dashboard() {
   const [criterionValue, setCriterionValue] = useState("");
 
   const [page, setPage] = useState(0);
-  const pageSize = 15;
+  const pageSize = 5;
 
   useEffect(() => {
     if (!token || role !== "admin") {
@@ -157,20 +157,24 @@ export default function Dashboard() {
       field: "created_at",
       headerName: "Date",
       flex: 1,
-      valueGetter: (params) => {
-        if (!params?.row?.created_at) return "-";
-        return new Date(params.row.created_at).toLocaleDateString();
-      },
+      valueGetter: (params) => params?.row?.created_at || "-"
     },
     { field: "name", headerName: "Name", flex: 1 },
     { field: "passport_number", headerName: "Passport No", flex: 1 },
-    { field: "reference_number", headerName: "Ref No", flex: 1 },
+    { field: "reference_number", headerName: "Reference No", flex: 1 },
     { field: "comment", headerName: "Comment", flex: 2 },
     {
-      field: "criteria_7",
-      headerName: "Overall Rating",
+      field: "overall_avg_rating",
+      headerName: "Overall Ratings Average",
       flex: 1,
-      renderCell: (params) => renderStars(params.value),
+      renderCell: (params) => {
+        const row = params.row;
+        const sum = (row.criteria_1 || 0) + (row.criteria_2 || 0) + (row.criteria_3 || 0) +
+                    (row.criteria_4 || 0) + (row.criteria_5 || 0) + (row.criteria_6 || 0) +
+                    (row.criteria_7 || 0);
+        const avg = sum / 7;
+        return renderStars(avg);
+      },
     },
   ];
 
@@ -312,7 +316,7 @@ export default function Dashboard() {
             columns={columns}
             getRowId={(row) => row.id}
             loading={loading}
-            pageSizeOptions={[10, 15, 20, 50, 100]}
+            pageSizeOptions={[5, 10, 15, 20, 50, 100]}
             initialState={{
               pagination: { paginationModel: { pageSize: pageSize } },
             }}

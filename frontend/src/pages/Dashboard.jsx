@@ -260,23 +260,29 @@ export default function Dashboard() {
                 onChange={(e) => setCriterion(e.target.value)}
               >
                 <MenuItem value="">None</MenuItem>
-                {[...Array(7)].map((_, i) => (
-                  <MenuItem key={i} value={`criteria_${i + 1}`}>
-                    Criteria {i + 1}
-                  </MenuItem>
-                ))}
+                <MenuItem value="criteria_1">Welcome</MenuItem>
+                <MenuItem value="criteria_2">Friendliness</MenuItem>
+                <MenuItem value="criteria_3">Information</MenuItem>
+                <MenuItem value="criteria_4">Hospitality</MenuItem>
+                <MenuItem value="criteria_5">Time taken</MenuItem>
+                <MenuItem value="criteria_6">Satisfaction compared to others</MenuItem>
+                <MenuItem value="criteria_7">Overall satisfaction</MenuItem>
               </Select>
             </FormControl>
 
-            <TextField
-              label="Criterion Value"
-              type="number"
-              size="small"
-              value={criterionValue}
-              onChange={(e) => setCriterionValue(e.target.value)}
-              disabled={!criterion}
-              fullWidth
-            />
+            <FormControl size="small" fullWidth disabled={!criterion}>
+              <InputLabel>Criterion Value</InputLabel>
+              <Select
+                value={criterionValue}
+                label="Criterion Value"
+                onChange={(e) => setCriterionValue(e.target.value)}
+              >
+                <MenuItem value="">None</MenuItem>
+                {[1, 2, 3, 4, 5].map((val) => (
+                  <MenuItem key={val} value={val}>{val}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </div>
         </Collapse>
 

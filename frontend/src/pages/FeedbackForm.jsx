@@ -235,9 +235,9 @@ function CommentStep({ form, setForm, handleToSubmitStep, handleBack }) {
         <ArrowBackIosNewIcon />
       </IconButton>
       <div className="bg-white rounded-2xl shadow-lg w-full max-w-4xl p-8 sm:p-12 flex flex-col justify-center text-center">
-        <p className="text-2xl text-gray-600 mb-2">අදහසක් දක්වන්න (අත්‍යවශ්‍ය නොවේ)</p>
+        <p className="text-2xl text-gray-600 mb-2">ඔබගේ අදහස (අත්‍යවශ්‍ය නොවේ)</p>
         <h3 className="text-2xl font-bold mb-3">Leave a Comment (Optional)</h3>
-        <p className="text-xl text-gray-600 mb-4">ஒரு கருத்தை இடுங்கள் (விருப்பத்தேர்வு)</p>
+        <p className="text-xl text-gray-600 mb-4">உங்கள் கருத்து (விருப்பத்தேர்வு)</p>
         <textarea className="w-full min-h-[120px] p-4 border rounded-xl mb-4" placeholder="Your comment..." value={form.comment} onChange={(e) => setForm({ ...form, comment: e.target.value })} />
         <div className="mt-8 flex justify-center">
           <button onClick={handleToSubmitStep} className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700">Next</button>

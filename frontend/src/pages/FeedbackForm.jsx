@@ -26,6 +26,8 @@ export default function FeedbackForm() {
     ratings: Array(7).fill(0),
     comment: "",
   });
+  const [passportError, setPassportError] = useState("");
+  const [referenceError, setReferenceError] = useState("");
 
   const handleNext = () => step < 11 && setStep(step + 1);
   const handleBack = () => step > 0 && setStep(step - 1);
@@ -35,10 +37,27 @@ export default function FeedbackForm() {
     const updated = [...form.ratings];
     updated[index] = value;
     setForm({ ...form, ratings: updated });
-
     setTimeout(() => {
       if (step < 10) setStep(step + 1);
     }, 800);
+  };
+
+  const checkPassportExists = async (passportNumber) => {
+    try {
+      const res = await api.get(`/feedback/check-passport/${passportNumber}`);
+      setPassportError(res.data.exists ? "A candidate with this passport already exists." : "");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const checkReferenceExists = async (referenceNumber) => {
+    try {
+      const res = await api.get(`/feedback/check-reference/${referenceNumber}`);
+      setReferenceError(res.data.exists ? "A candidate with this reference number already exists." : "");
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleSubmit = async () => {
@@ -46,10 +65,9 @@ export default function FeedbackForm() {
       toast.error("Please complete all required fields and ratings before submitting.");
       return;
     }
-
     setLoading(true);
     try {
-      const payload = {
+      await api.post("/feedback", {
         name: form.name,
         passport_number: form.passport,
         reference_number: form.reference,
@@ -61,8 +79,7 @@ export default function FeedbackForm() {
         criteria_5: form.ratings[4],
         criteria_6: form.ratings[5],
         criteria_7: form.ratings[6],
-      };
-      await api.post("/feedback", payload);
+      });
       toast.success("🎉 Thank you for your feedback!");
       setForm({ name: "", passport: "", reference: "", ratings: Array(7).fill(0), comment: "" });
       setStep(0);
@@ -78,164 +95,182 @@ export default function FeedbackForm() {
     <>
       <FeedbackHeader />
       <div className="flex flex-col items-center justify-start px-4 pt-6 overflow-hidden h-[calc(100vh-115px)]">
-        <h1 className="text-3xl sm:text-3xl font-medium text-gray-800 text-center mb-6">Can You Please Rate Us</h1>
+        <h1 className="text-3xl font-medium text-gray-800 text-center mb-6">Can You Please Rate Us</h1>
 
-        {/* Step 0 – Name */}
         {step === 0 && (
-          <div className="relative w-full max-w-5xl mx-auto flex items-center justify-center px-4">
-            <div className="bg-white rounded-2xl shadow-lg w-full max-w-4xl p-8 sm:p-12 min-h-[480px] mx-auto flex flex-col justify-center text-center">
-              <p className="text-2xl text-gray-600 mb-2">සම්පූර්ණ නම</p>
-              <h3 className="text-3xl font-bold mb-3">Full Name</h3>
-              <p className="text-xl text-gray-600 mb-4">முழு பெயர்</p>
-              <input className="w-full py-3 px-4 text-lg border rounded-xl" placeholder="Full Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
-              <div className="mt-8 flex justify-center">
-                <button onClick={handleNext} className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">Next</button>
-              </div>
-              <p className="text-gray-600 mt-auto pt-6">Step 1 of 11</p>
-            </div>
-            <IconButton onClick={handleNext} className="!absolute -right-16 hover:scale-110 transition-transform" sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc", backgroundColor: "#ffffff" }}>
-              <ArrowForwardIosIcon sx={{ color: "#4a5565" }} />
-            </IconButton>
-          </div>
+          <InputStep
+            labelSi="සම්පූර්ණ නම"
+            labelEn="Full Name"
+            labelTa="முழு பெயர்"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            step={1}
+            handleNext={handleNext}
+            handleBack={handleBack}
+          />
         )}
 
-        {/* Step 1 – Passport */}
         {step === 1 && (
-          <InputStep labelSi="පාස්පෝට් අංකය" labelEn="Passport Number" labelTa="கடவுச்சீட்டு எண்" value={form.passport} onChange={(e) => setForm({ ...form, passport: e.target.value })} step={2} handleNext={handleNext} handleBack={handleBack} />
+          <InputStep
+            labelSi="පාස්පෝට් අංකය"
+            labelEn="Passport Number"
+            labelTa="கடவுச்சீட்டு எண்"
+            value={form.passport}
+            onChange={(e) => {
+              const value = e.target.value;
+              setForm({ ...form, passport: value });
+              checkPassportExists(value);
+            }}
+            error={passportError}
+            disabled={!!passportError}
+            step={2}
+            handleNext={handleNext}
+            handleBack={handleBack}
+          />
         )}
 
-        {/* Step 2 – Reference */}
         {step === 2 && (
-          <InputStep labelSi="යොමු අංකය" labelEn="Reference Number" labelTa="குறிப்பு எண்" value={form.reference} onChange={(e) => setForm({ ...form, reference: e.target.value })} step={3} handleNext={handleNext} handleBack={handleBack} />
+          <InputStep
+            labelSi="යොමු අංකය"
+            labelEn="Reference Number"
+            labelTa="குறிப்பு எண்"
+            value={form.reference}
+            onChange={(e) => {
+              const value = e.target.value;
+              setForm({ ...form, reference: value });
+              checkReferenceExists(value);
+            }}
+            error={referenceError}
+            disabled={!!referenceError}
+            step={3}
+            handleNext={handleNext}
+            handleBack={handleBack}
+          />
         )}
 
-        {/* Step 3–9 – Ratings */}
         {step >= 3 && step <= 9 && (
-          <div className="relative w-full max-w-5xl mx-auto flex items-center justify-center px-4">
-            <IconButton onClick={handleBack} className="!absolute -left-16 hover:scale-110 transition-transform" sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc", backgroundColor: "#ffffff" }}>
-              <ArrowBackIosNewIcon sx={{ color: "#4a5565" }} />
-            </IconButton>
-            <div className="bg-white rounded-2xl shadow-lg w-full max-w-4xl p-8 sm:p-12 min-h-[480px] mx-auto flex flex-col justify-center text-center">
-              <p className="text-2xl text-gray-600 mb-2">{criteriaLabels[step - 3].si}</p>
-              <h3 className="text-3xl font-bold mb-3">{criteriaLabels[step - 3].en}</h3>
-              <p className="text-xl text-gray-600 mb-4">{criteriaLabels[step - 3].ta}</p>
-              <div className="flex justify-center gap-4 mb-4">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button key={star} onClick={() => handleRating(step - 3, star)} className="text-8xl transition-transform duration-200 hover:scale-110">
-                    <span className={star <= form.ratings[step - 3] ? "text-yellow-400" : "text-gray-300"}>★</span>
-                  </button>
-                ))}
-              </div>
-              <p className="text-gray-600 mt-auto pt-6">Step {step + 1} of 11</p>
-            </div>
-            <IconButton onClick={handleNext} className="!absolute -right-16 hover:scale-110 transition-transform" sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc", backgroundColor: "#ffffff" }}>
-              <ArrowForwardIosIcon sx={{ color: "#4a5565" }} />
-            </IconButton>
-          </div>
+          <RatingStep step={step} handleBack={handleBack} handleNext={handleNext} form={form} handleRating={handleRating} />
         )}
 
-        {/* Step 10 – Comment */}
         {step === 10 && (
-          <div className="relative w-full max-w-5xl mx-auto flex items-center justify-center px-4">
-            <IconButton
-              onClick={handleBack}
-              className="!absolute -left-16 hover:scale-110 transition-transform"
-              sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc", backgroundColor: "#ffffff" }}
-            >
-              <ArrowBackIosNewIcon sx={{ color: "#4a5565" }} />
-            </IconButton>
-
-            <div className="bg-white rounded-2xl shadow-lg w-full max-w-4xl p-8 sm:p-12 min-h-[480px] mx-auto flex flex-col justify-center text-center">
-              <p className="text-2xl text-gray-600 mb-2">අදහසක් දක්වන්න (අත්‍යවශ්‍ය නොවේ)</p>
-              <h3 className="text-2xl font-bold mb-3">Leave a Comment (Optional)</h3>
-              <p className="text-xl text-gray-600 mb-4">ஒரு கருத்தை இடுங்கள் (விருப்பத்தேர்வு)</p>
-
-              <textarea
-                className="w-full min-h-[120px] p-4 border rounded-xl mb-4"
-                placeholder="Your comment..."
-                value={form.comment}
-                onChange={(e) => setForm({ ...form, comment: e.target.value })}
-              />
-              <div className="mt-8 flex justify-center">
-                <button
-                  onClick={handleToSubmitStep}
-                  className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition"
-                >
-                  Next
-                </button>
-              </div>
-              <p className="text-gray-600 mt-auto pt-6 text-center">Step {step + 1} of 11</p>
-            </div>
-
-            <IconButton
-              onClick={handleToSubmitStep}
-              className="!absolute -right-16 hover:scale-110 transition-transform"
-              sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc", backgroundColor: "#ffffff" }}
-            >
-              <ArrowForwardIosIcon sx={{ color: "#4a5565" }} />
-            </IconButton>
-          </div>
+          <CommentStep form={form} setForm={setForm} handleToSubmitStep={handleToSubmitStep} handleBack={handleBack} />
         )}
 
-        {/* Step 11 – Submit */}
         {step === 11 && (
-          <div className="relative w-full max-w-5xl mx-auto flex items-center justify-center px-4">
-            <IconButton
-              onClick={handleBack}
-              className="!absolute -left-16 hover:scale-110 transition-transform"
-              sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc", backgroundColor: "#ffffff" }}
-            >
-              <ArrowBackIosNewIcon sx={{ color: "#4a5565" }} />
-            </IconButton>
-
-            <div className="bg-white rounded-2xl shadow-lg w-full max-w-4xl p-8 sm:p-12 min-h-[480px] mx-auto flex flex-col justify-start items-center text-center pt-6">
-              <p className="text-2xl text-gray-600 mb-2">ඉදිරිපත් කිරීමට සූදානම්ද?</p>
-              <h3 className="text-3xl font-bold mb-3">Ready to Submit?</h3>
-              <p className="text-xl text-gray-600 mb-4">சமர்ப்பிக்க தயார்?</p>
-
-              <button
-                onClick={handleSubmit}
-                disabled={loading}
-                className="bg-indigo-600 text-white py-4 px-10 rounded-lg hover:bg-indigo-700 transition text-3xl font-semibold"
-              >
-                {loading ? (
-                  <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full inline-block"></span>
-                ) : (
-                  <>
-                    <span className="block">ප්‍රතිචාරය යොමු කරන්න</span>
-                    <span className="block">Submit Feedback</span>
-                    <span className="block text-2xl">கருத்தை சமர்ப்பிக்கவும்</span>
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
+          <SubmitStep loading={loading} handleSubmit={handleSubmit} handleBack={handleBack} />
         )}
       </div>
     </>
   );
 }
 
-// Reusable Input Step Component
-function InputStep({ labelSi, labelEn, labelTa, value, onChange, step, handleNext, handleBack }) {
+function InputStep({ labelSi, labelEn, labelTa, value, onChange, error, disabled, step, handleNext, handleBack }) {
   return (
     <div className="relative w-full max-w-5xl mx-auto flex items-center justify-center px-4">
-      <IconButton onClick={handleBack} className="!absolute -left-16 hover:scale-110 transition-transform" sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc", backgroundColor: "#ffffff" }}>
-        <ArrowBackIosNewIcon sx={{ color: "#4a5565" }} />
+      <IconButton onClick={handleBack} className="!absolute -left-16" sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc" }}>
+        <ArrowBackIosNewIcon />
       </IconButton>
-      <div className="bg-white rounded-2xl shadow-lg w-full max-w-4xl p-8 sm:p-12 min-h-[480px] mx-auto flex flex-col justify-center text-center">
+      <div className="bg-white rounded-2xl shadow-lg w-full max-w-4xl p-8 sm:p-12 flex flex-col justify-center text-center">
         <p className="text-2xl text-gray-600 mb-2">{labelSi}</p>
         <h3 className="text-3xl font-bold mb-3">{labelEn}</h3>
         <p className="text-xl text-gray-600 mb-4">{labelTa}</p>
-        <input className="w-full py-3 px-4 text-lg border rounded-xl" placeholder={labelEn} value={value} onChange={onChange} required />
-        <div className="mt-8 flex justify-center">
-          <button onClick={handleNext} className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">Next</button>
-        </div>
-        <p className="text-gray-600 mt-auto pt-6">Step {step} of 11</p>
+        <form onSubmit={(e) => { e.preventDefault(); handleNext(); }} className="flex flex-col">
+          <input
+            className="w-full py-3 px-4 text-lg border rounded-xl"
+            placeholder={labelEn}
+            value={value}
+            onChange={onChange}
+            required
+          />
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+          <div className="mt-8 flex justify-center">
+            <button
+              type="submit"
+              className={`bg-indigo-600 text-white px-6 py-2 rounded-lg ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-700'}`}
+              disabled={disabled}
+            >
+              Next
+            </button>
+          </div>
+        </form>
+        <p className="text-gray-600 pt-6">Step {step} of 11</p>
       </div>
-      <IconButton onClick={handleNext} className="!absolute -right-16 hover:scale-110 transition-transform" sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc", backgroundColor: "#ffffff" }}>
-        <ArrowForwardIosIcon sx={{ color: "#4a5565" }} />
+      <IconButton onClick={handleNext} className="!absolute -right-16" sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc" }}>
+        <ArrowForwardIosIcon />
       </IconButton>
+    </div>
+  );
+}
+
+function RatingStep({ step, handleBack, handleNext, form, handleRating }) {
+  return (
+    <div className="relative w-full max-w-5xl mx-auto flex items-center justify-center px-4">
+      <IconButton onClick={handleBack} className="!absolute -left-16" sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc" }}>
+        <ArrowBackIosNewIcon />
+      </IconButton>
+      <div className="bg-white rounded-2xl shadow-lg w-full max-w-4xl p-8 sm:p-12 flex flex-col justify-center text-center">
+        <p className="text-2xl text-gray-600 mb-2">{criteriaLabels[step - 3].si}</p>
+        <h3 className="text-3xl font-bold mb-3">{criteriaLabels[step - 3].en}</h3>
+        <p className="text-xl text-gray-600 mb-4">{criteriaLabels[step - 3].ta}</p>
+        <div className="flex justify-center gap-4 mb-4">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <button key={star} onClick={() => handleRating(step - 3, star)} className="text-8xl hover:scale-110">
+              <span className={star <= form.ratings[step - 3] ? "text-yellow-400" : "text-gray-300"}>★</span>
+            </button>
+          ))}
+        </div>
+        <p className="text-gray-600 pt-6">Step {step + 1} of 11</p>
+      </div>
+      <IconButton onClick={handleNext} className="!absolute -right-16" sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc" }}>
+        <ArrowForwardIosIcon />
+      </IconButton>
+    </div>
+  );
+}
+
+function CommentStep({ form, setForm, handleToSubmitStep, handleBack }) {
+  return (
+    <div className="relative w-full max-w-5xl mx-auto flex items-center justify-center px-4">
+      <IconButton onClick={handleBack} className="!absolute -left-16" sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc" }}>
+        <ArrowBackIosNewIcon />
+      </IconButton>
+      <div className="bg-white rounded-2xl shadow-lg w-full max-w-4xl p-8 sm:p-12 flex flex-col justify-center text-center">
+        <p className="text-2xl text-gray-600 mb-2">ඔබගේ අදහස (අත්‍යවශ්‍ය නොවේ)</p>
+        <h3 className="text-2xl font-bold mb-3">Leave a Comment (Optional)</h3>
+        <p className="text-xl text-gray-600 mb-4">உங்கள் கருத்து (விருப்பத்தேர்வு)</p>
+        <textarea className="w-full min-h-[120px] p-4 border rounded-xl mb-4" placeholder="Your comment..." value={form.comment} onChange={(e) => setForm({ ...form, comment: e.target.value })} />
+        <div className="mt-8 flex justify-center">
+          <button onClick={handleToSubmitStep} className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700">Next</button>
+        </div>
+        <p className="text-gray-600 pt-6">Step 11 of 11</p>
+      </div>
+      <IconButton onClick={handleToSubmitStep} className="!absolute -right-16" sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc" }}>
+        <ArrowForwardIosIcon />
+      </IconButton>
+    </div>
+  );
+}
+
+function SubmitStep({ loading, handleSubmit, handleBack }) {
+  return (
+    <div className="relative w-full max-w-5xl mx-auto flex items-center justify-center px-4">
+      <IconButton onClick={handleBack} className="!absolute -left-16" sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc" }}>
+        <ArrowBackIosNewIcon />
+      </IconButton>
+      <div className="bg-white rounded-2xl shadow-lg w-full max-w-4xl p-8 sm:p-12 flex flex-col items-center text-center">
+        <p className="text-2xl text-gray-600 mb-2">ඉදිරිපත් කිරීමට සූදානම්ද?</p>
+        <h3 className="text-3xl font-bold mb-3">Ready to Submit?</h3>
+        <p className="text-xl text-gray-600 mb-4">சமர்ப்பிக்க தயார்?</p>
+        <button onClick={handleSubmit} disabled={loading} className="bg-indigo-600 text-white py-4 px-10 rounded-lg hover:bg-indigo-700 text-3xl font-semibold">
+          {loading ? <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full inline-block"></span> : (
+            <>
+              <span className="block">ප්‍රතිචාරය යොමු කරන්න</span>
+              <span className="block">Submit Feedback</span>
+              <span className="block text-2xl">கருத்தை சமர்ப்பிக்கவும்</span>
+            </>
+          )}
+        </button>
+      </div>
     </div>
   );
 }

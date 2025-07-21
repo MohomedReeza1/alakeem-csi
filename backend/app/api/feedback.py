@@ -69,3 +69,13 @@ def read_feedbacks(
         criterion_value=criterion_value
     )
     return feedbacks
+
+@router.get("/feedback/check-passport/{passport_number}")
+def check_passport(passport_number: str, db: Session = Depends(get_db)):
+    exists = crud.check_passport_exists(db, passport_number)
+    return {"exists": exists}
+
+@router.get("/feedback/check-reference/{reference_number}")
+def check_reference(reference_number: str, db: Session = Depends(get_db)):
+    exists = crud.check_reference_exists(db, reference_number)
+    return {"exists": exists}

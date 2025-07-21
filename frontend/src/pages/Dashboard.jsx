@@ -28,8 +28,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showDetailedRatings, setShowDetailedRatings] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
 
-  // Filters
   const [name, setName] = useState("");
   const [passportNumber, setPassportNumber] = useState("");
   const [referenceNumber, setReferenceNumber] = useState("");
@@ -41,7 +41,7 @@ export default function Dashboard() {
   const [criterionValue, setCriterionValue] = useState("");
 
   const [page, setPage] = useState(0);
-  const pageSize = 10;
+  const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
     if (!token || role !== "admin") {
@@ -49,7 +49,7 @@ export default function Dashboard() {
     } else {
       fetchFeedbacks();
     }
-  }, [token, role, page]);
+  }, [token, role, page, pageSize]);
 
   const fetchFeedbacks = async () => {
     setLoading(true);
@@ -72,10 +72,12 @@ export default function Dashboard() {
         headers: { Authorization: `Bearer ${token}` },
         params,
       });
-      setFeedbacks(Array.isArray(res.data) ? res.data : []);
+      setFeedbacks(res.data.results || []);
+      setTotalCount(res.data.total || 0);
     } catch (err) {
       console.error("Failed to fetch feedbacks", err);
       setFeedbacks([]);
+      setTotalCount(0);
     } finally {
       setLoading(false);
     }
@@ -97,6 +99,7 @@ export default function Dashboard() {
     setCriterion("");
     setCriterionValue("");
     setPage(0);
+    fetchFeedbacks();
   };
 
   const renderStars = (value) => (
@@ -107,56 +110,17 @@ export default function Dashboard() {
 
   const detailedColumns = [
     { field: "name", headerName: "Name", flex: 1 },
-    {
-      field: "criteria_1",
-      headerName: "Welcome",
-      flex: 1,
-      renderCell: (params) => renderStars(params.value),
-    },
-    {
-      field: "criteria_2",
-      headerName: "Friendliness",
-      flex: 1,
-      renderCell: (params) => renderStars(params.value),
-    },
-    {
-      field: "criteria_3",
-      headerName: "Information",
-      flex: 1,
-      renderCell: (params) => renderStars(params.value),
-    },
-    {
-      field: "criteria_4",
-      headerName: "Hospitality",
-      flex: 1,
-      renderCell: (params) => renderStars(params.value),
-    },
-    {
-      field: "criteria_5",
-      headerName: "Time Taken",
-      flex: 1,
-      renderCell: (params) => renderStars(params.value),
-    },
-    {
-      field: "criteria_6",
-      headerName: "Satisfaction Compared to Others",
-      flex: 1,
-      renderCell: (params) => renderStars(params.value),
-    },
-    {
-      field: "criteria_7",
-      headerName: "Overall Satisfaction",
-      flex: 1,
-      renderCell: (params) => renderStars(params.value),
-    },
+    { field: "criteria_1", headerName: "Welcome", flex: 1, renderCell: (params) => renderStars(params.value) },
+    { field: "criteria_2", headerName: "Friendliness", flex: 1, renderCell: (params) => renderStars(params.value) },
+    { field: "criteria_3", headerName: "Information", flex: 1, renderCell: (params) => renderStars(params.value) },
+    { field: "criteria_4", headerName: "Hospitality", flex: 1, renderCell: (params) => renderStars(params.value) },
+    { field: "criteria_5", headerName: "Time Taken", flex: 1, renderCell: (params) => renderStars(params.value) },
+    { field: "criteria_6", headerName: "Satisfaction Compared to Others", flex: 1, renderCell: (params) => renderStars(params.value) },
+    { field: "criteria_7", headerName: "Overall Satisfaction", flex: 1, renderCell: (params) => renderStars(params.value) },
   ];
 
   const baseColumns = [
-    {
-      field: "created_at",
-      headerName: "Date",
-      flex: 1,
-    },
+    { field: "created_at", headerName: "Date", flex: 1 },
     { field: "name", headerName: "Name", flex: 1 },
     { field: "passport_number", headerName: "Passport No", flex: 1 },
     { field: "reference_number", headerName: "Reference No", flex: 1 },
@@ -167,14 +131,9 @@ export default function Dashboard() {
       flex: 1,
       renderCell: (params) => {
         const row = params.row;
-        const sum =
-          (row.criteria_1 || 0) +
-          (row.criteria_2 || 0) +
-          (row.criteria_3 || 0) +
-          (row.criteria_4 || 0) +
-          (row.criteria_5 || 0) +
-          (row.criteria_6 || 0) +
-          (row.criteria_7 || 0);
+        const sum = (row.criteria_1 || 0) + (row.criteria_2 || 0) + (row.criteria_3 || 0) +
+                    (row.criteria_4 || 0) + (row.criteria_5 || 0) + (row.criteria_6 || 0) +
+                    (row.criteria_7 || 0);
         const avg = sum / 7;
         return renderStars(avg);
       },
@@ -187,83 +146,32 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-50">
       <Header />
       <main className="p-2 sm:p-4 max-w-7xl mx-auto">
-        <h2 className="text-2xl font-semibold mb-4 text-center">
-          CSI Admin Dashboard
-        </h2>
+        <h2 className="text-2xl font-semibold mb-4 text-center">CSI Admin Dashboard</h2>
 
-        {/* Filters */}
         <div className="bg-white p-4 rounded-xl shadow mb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
-          <TextField
-            label="Search Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            size="small"
-            fullWidth
-          />
-          <TextField
-            label="Search Passport"
-            value={passportNumber}
-            onChange={(e) => setPassportNumber(e.target.value)}
-            size="small"
-            fullWidth
-          />
-          <TextField
-            label="Search Reference"
-            value={referenceNumber}
-            onChange={(e) => setReferenceNumber(e.target.value)}
-            size="small"
-            fullWidth
-          />
-          <Button
-            variant="outlined"
-            onClick={() => setShowAdvanced(!showAdvanced)}
-            className="col-span-1 md:col-span-2 lg:col-span-3"
-          >
+          <TextField label="Search Name" value={name} onChange={(e) => setName(e.target.value)} size="small" fullWidth />
+          <TextField label="Search Passport" value={passportNumber} onChange={(e) => setPassportNumber(e.target.value)} size="small" fullWidth />
+          <TextField label="Search Reference" value={referenceNumber} onChange={(e) => setReferenceNumber(e.target.value)} size="small" fullWidth />
+          <Button variant="outlined" onClick={() => setShowAdvanced(!showAdvanced)} className="col-span-1 md:col-span-2 lg:col-span-3">
             {showAdvanced ? "Hide Advanced Filters" : "Show Advanced Filters"}
           </Button>
         </div>
 
-        {/* Advanced Filters */}
         <Collapse in={showAdvanced}>
           <div className="bg-white p-4 rounded-xl shadow mb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
             <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DatePicker
-                label="Start Date"
-                value={startDate}
-                onChange={setStartDate}
-                format="yyyy/MM/dd"
-                slotProps={{ textField: { size: "small", fullWidth: true } }}
-              />
-              <DatePicker
-                label="End Date"
-                value={endDate}
-                onChange={setEndDate}
-                format="yyyy/MM/dd"
-                slotProps={{ textField: { size: "small", fullWidth: true } }}
-              />
+              <DatePicker label="Start Date" value={startDate} onChange={setStartDate} format="yyyy/MM/dd" slotProps={{ textField: { size: "small", fullWidth: true } }} />
+              <DatePicker label="End Date" value={endDate} onChange={setEndDate} format="yyyy/MM/dd" slotProps={{ textField: { size: "small", fullWidth: true } }} />
             </LocalizationProvider>
 
             <div className="col-span-1 md:col-span-2 lg:col-span-1">
               <p className="text-sm text-gray-600">Rating Range</p>
-              <Slider
-                value={[minRating, maxRating]}
-                onChange={(e, newValue) => {
-                  setMinRating(newValue[0]);
-                  setMaxRating(newValue[1]);
-                }}
-                min={1}
-                max={5}
-                valueLabelDisplay="auto"
-              />
+              <Slider value={[minRating, maxRating]} onChange={(e, newValue) => { setMinRating(newValue[0]); setMaxRating(newValue[1]); }} min={1} max={5} valueLabelDisplay="auto" />
             </div>
 
             <FormControl size="small" fullWidth>
               <InputLabel>Criterion</InputLabel>
-              <Select
-                value={criterion}
-                label="Criterion"
-                onChange={(e) => setCriterion(e.target.value)}
-              >
+              <Select value={criterion} label="Criterion" onChange={(e) => setCriterion(e.target.value)}>
                 <MenuItem value="">None</MenuItem>
                 <MenuItem value="criteria_1">Welcome</MenuItem>
                 <MenuItem value="criteria_2">Friendliness</MenuItem>
@@ -277,60 +185,40 @@ export default function Dashboard() {
 
             <FormControl size="small" fullWidth disabled={!criterion}>
               <InputLabel>Criterion Value</InputLabel>
-              <Select
-                value={criterionValue}
-                label="Criterion Value"
-                onChange={(e) => setCriterionValue(e.target.value)}
-              >
+              <Select value={criterionValue} label="Criterion Value" onChange={(e) => setCriterionValue(e.target.value)}>
                 <MenuItem value="">None</MenuItem>
                 {[1, 2, 3, 4, 5].map((val) => (
-                  <MenuItem key={val} value={val}>
-                    {val}
-                  </MenuItem>
+                  <MenuItem key={val} value={val}>{val}</MenuItem>
                 ))}
               </Select>
             </FormControl>
           </div>
         </Collapse>
 
-        {/* Buttons */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-2 mb-4 w-full">
           <div className="flex gap-2">
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleFilter}
-              disabled={loading}
-            >
-              Apply Filters
-            </Button>
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={handleReset}
-              disabled={loading}
-            >
-              Reset
-            </Button>
+            <Button variant="contained" color="primary" onClick={handleFilter} disabled={loading}>Apply Filters</Button>
+            <Button variant="outlined" color="secondary" onClick={handleReset} disabled={loading}>Reset</Button>
           </div>
-          <Button
-            variant="text"
-            onClick={() => setShowDetailedRatings(!showDetailedRatings)}
-          >
+          <Button variant="text" onClick={() => setShowDetailedRatings(!showDetailedRatings)}>
             {showDetailedRatings ? "Hide Detailed Ratings" : "Show Detailed Ratings"}
           </Button>
         </div>
 
-        {/* Data Table */}
         <div className="bg-white p-2 sm:p-4 rounded-xl shadow w-full overflow-x-auto">
           <DataGrid
             rows={feedbacks}
             columns={columns}
             getRowId={(row) => row.id}
             loading={loading}
+            rowCount={totalCount}
+            paginationMode="server"
             pageSizeOptions={[10, 20, 50, 100]}
-            paginationModel={{ pageSize: pageSize, page: page }}
-            onPaginationModelChange={(model) => setPage(model.page)}
+            paginationModel={{ pageSize, page }}
+            onPaginationModelChange={(model) => {
+              setPage(model.page);
+              setPageSize(model.pageSize);
+            }}
             autoHeight
             disableColumnMenu
           />

@@ -39,7 +39,7 @@ def create_feedback(feedback: schemas.FeedbackCreate, db: Session = Depends(get_
     crud.create_feedback(db, feedback)
     return {"message": "Feedback submitted successfully"}
 
-@router.get("/feedbacks", response_model=List[schemas.FeedbackOut])
+@router.get("/feedbacks")
 def read_feedbacks(
     skip: int = 0,
     limit: int = 10,
@@ -54,7 +54,7 @@ def read_feedbacks(
     criterion_value: Optional[int] = None,
     db: Session = Depends(get_db)
 ):
-    feedbacks = crud.get_feedbacks(
+    data = crud.get_feedbacks_with_count(
         db,
         skip=skip,
         limit=limit,
@@ -68,7 +68,7 @@ def read_feedbacks(
         criterion=criterion,
         criterion_value=criterion_value
     )
-    return feedbacks
+    return data
 
 @router.get("/feedback/check-passport/{passport_number}")
 def check_passport(passport_number: str, db: Session = Depends(get_db)):

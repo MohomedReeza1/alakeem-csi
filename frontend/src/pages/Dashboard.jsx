@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { format } from "date-fns";
 
 export default function Dashboard() {
   const { token, role } = useAuth();
@@ -60,8 +61,8 @@ export default function Dashboard() {
       if (name) params.name = name;
       if (passportNumber) params.passport_number = passportNumber;
       if (referenceNumber) params.reference_number = referenceNumber;
-      if (startDate) params.start_date = startDate.toISOString().split("T")[0];
-      if (endDate) params.end_date = endDate.toISOString().split("T")[0];
+      if (startDate) params.start_date = format(startDate, "yyyy-MM-dd");
+      if (endDate) params.end_date = format(endDate, "yyyy-MM-dd");
       if (minRating) params.min_rating = minRating;
       if (maxRating) params.max_rating = maxRating;
       if (criterion) params.criterion = criterion;
@@ -71,9 +72,7 @@ export default function Dashboard() {
         headers: { Authorization: `Bearer ${token}` },
         params,
       });
-
-      setFeedbacks(Array.isArray(res.data) ? res.data :
-        res.data?.results ?? []);
+      setFeedbacks(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error("Failed to fetch feedbacks", err);
       setFeedbacks([]);
@@ -97,7 +96,7 @@ export default function Dashboard() {
     setMaxRating(5);
     setCriterion("");
     setCriterionValue("");
-    fetchFeedbacks();
+    setPage(0);
   };
 
   const renderStars = (value) => (
@@ -168,9 +167,14 @@ export default function Dashboard() {
       flex: 1,
       renderCell: (params) => {
         const row = params.row;
-        const sum = (row.criteria_1 || 0) + (row.criteria_2 || 0) + (row.criteria_3 || 0) +
-                    (row.criteria_4 || 0) + (row.criteria_5 || 0) + (row.criteria_6 || 0) +
-                    (row.criteria_7 || 0);
+        const sum =
+          (row.criteria_1 || 0) +
+          (row.criteria_2 || 0) +
+          (row.criteria_3 || 0) +
+          (row.criteria_4 || 0) +
+          (row.criteria_5 || 0) +
+          (row.criteria_6 || 0) +
+          (row.criteria_7 || 0);
         const avg = sum / 7;
         return renderStars(avg);
       },
@@ -182,7 +186,6 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-
       <main className="p-2 sm:p-4 max-w-7xl mx-auto">
         <h2 className="text-2xl font-semibold mb-4 text-center">
           CSI Admin Dashboard
@@ -228,12 +231,14 @@ export default function Dashboard() {
                 label="Start Date"
                 value={startDate}
                 onChange={setStartDate}
+                format="yyyy/MM/dd"
                 slotProps={{ textField: { size: "small", fullWidth: true } }}
               />
               <DatePicker
                 label="End Date"
                 value={endDate}
                 onChange={setEndDate}
+                format="yyyy/MM/dd"
                 slotProps={{ textField: { size: "small", fullWidth: true } }}
               />
             </LocalizationProvider>
@@ -279,7 +284,9 @@ export default function Dashboard() {
               >
                 <MenuItem value="">None</MenuItem>
                 {[1, 2, 3, 4, 5].map((val) => (
-                  <MenuItem key={val} value={val}>{val}</MenuItem>
+                  <MenuItem key={val} value={val}>
+                    {val}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -321,10 +328,9 @@ export default function Dashboard() {
             columns={columns}
             getRowId={(row) => row.id}
             loading={loading}
-            pageSizeOptions={[5, 10, 15, 20, 50, 100]}
-            initialState={{
-              pagination: { paginationModel: { pageSize: pageSize } },
-            }}
+            pageSizeOptions={[10, 20, 50, 100]}
+            paginationModel={{ pageSize: pageSize, page: page }}
+            onPaginationModelChange={(model) => setPage(model.page)}
             autoHeight
             disableColumnMenu
           />

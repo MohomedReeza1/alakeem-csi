@@ -1,2 +1,2 @@
 from .admin import get_admin_by_username, create_admin
-from .feedback import create_feedback, get_feedbacks, get_feedback_by_id, get_average_per_criteria, get_monthly_feedback_counts, get_top_complaints
+from .feedback import create_feedback, get_feedbacks, get_feedback_by_id, get_average_per_criteria, get_monthly_feedback_counts, get_top_complaints, check_passport_exists, check_reference_exists

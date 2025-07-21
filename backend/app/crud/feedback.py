@@ -106,3 +106,9 @@ def get_top_complaints(db: Session, limit: int = 5):
     ).limit(limit).all()
 
     return feedbacks
+
+def check_passport_exists(db: Session, passport_number: str) -> bool:
+    return db.query(models.Feedback).filter(models.Feedback.passport_number == passport_number).first() is not None
+
+def check_reference_exists(db: Session, reference_number: str) -> bool:
+    return db.query(models.Feedback).filter(models.Feedback.reference_number == reference_number).first() is not None

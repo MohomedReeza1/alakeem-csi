@@ -99,7 +99,12 @@ export default function Dashboard() {
     setCriterion("");
     setCriterionValue("");
     setPage(0);
-    fetchFeedbacks();
+    setPageSize(10);
+
+    // Refetch after resetting everything
+    setTimeout(() => {
+      fetchFeedbacks();
+    }, 100);
   };
 
   const renderStars = (value) => (

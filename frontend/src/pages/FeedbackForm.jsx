@@ -87,10 +87,29 @@ export default function FeedbackForm() {
               <p className="text-2xl text-gray-600 mb-2">සම්පූර්ණ නම</p>
               <h3 className="text-3xl font-bold mb-3">Full Name</h3>
               <p className="text-xl text-gray-600 mb-4">முழு பெயர்</p>
-              <input className="w-full py-3 px-4 text-lg border rounded-xl" placeholder="Full Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
-              <div className="mt-8 flex justify-center">
-                <button onClick={handleNext} className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">Next</button>
-              </div>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleNext();
+                }}
+                className="flex flex-col items-center"
+              >
+                <input 
+                  className="w-full py-3 px-4 text-lg border rounded-xl" 
+                  placeholder="Full Name" 
+                  value={form.name} 
+                  onChange={(e) => setForm({ ...form, name: e.target.value })} 
+                  required 
+                />
+                <div className="mt-8 flex justify-center">
+                  <button 
+                    type="submit"
+                    className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition"
+                  >
+                    Next
+                  </button>
+                </div>
+              </form>
               <p className="text-gray-600 mt-auto pt-6">Step 1 of 11</p>
             </div>
             <IconButton onClick={handleNext} className="!absolute -right-16 hover:scale-110 transition-transform" sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc", backgroundColor: "#ffffff" }}>
@@ -218,24 +237,45 @@ export default function FeedbackForm() {
 
 // Reusable Input Step Component
 function InputStep({ labelSi, labelEn, labelTa, value, onChange, step, handleNext, handleBack }) {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleNext();
+  };
+
   return (
     <div className="relative w-full max-w-5xl mx-auto flex items-center justify-center px-4">
-      <IconButton onClick={handleBack} className="!absolute -left-16 hover:scale-110 transition-transform" sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc", backgroundColor: "#ffffff" }}>
+      <IconButton onClick={handleBack} className="!absolute -left-16 hover:scale-110 transition-transform"
+        sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc", backgroundColor: "#ffffff" }}>
         <ArrowBackIosNewIcon sx={{ color: "#4a5565" }} />
       </IconButton>
-      <div className="bg-white rounded-2xl shadow-lg w-full max-w-4xl p-8 sm:p-12 min-h-[480px] mx-auto flex flex-col justify-center text-center">
+
+      <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg w-full max-w-4xl p-8 sm:p-12 min-h-[480px] mx-auto flex flex-col justify-center text-center">
         <p className="text-2xl text-gray-600 mb-2">{labelSi}</p>
         <h3 className="text-3xl font-bold mb-3">{labelEn}</h3>
         <p className="text-xl text-gray-600 mb-4">{labelTa}</p>
-        <input className="w-full py-3 px-4 text-lg border rounded-xl" placeholder={labelEn} value={value} onChange={onChange} required />
+        <input
+          className="w-full py-3 px-4 text-lg border rounded-xl"
+          placeholder={labelEn}
+          value={value}
+          onChange={onChange}
+          required
+        />
         <div className="mt-8 flex justify-center">
-          <button onClick={handleNext} className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">Next</button>
+          <button
+            type="submit"
+            className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition"
+          >
+            Next
+          </button>
         </div>
         <p className="text-gray-600 mt-auto pt-6">Step {step} of 11</p>
-      </div>
-      <IconButton onClick={handleNext} className="!absolute -right-16 hover:scale-110 transition-transform" sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc", backgroundColor: "#ffffff" }}>
+      </form>
+
+      <IconButton onClick={handleNext} className="!absolute -right-16 hover:scale-110 transition-transform"
+        sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc", backgroundColor: "#ffffff" }}>
         <ArrowForwardIosIcon sx={{ color: "#4a5565" }} />
       </IconButton>
     </div>
   );
 }
+

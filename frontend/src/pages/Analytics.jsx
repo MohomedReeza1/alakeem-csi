@@ -73,51 +73,53 @@ export default function Analytics() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-      <main className="p-6 max-w-7xl mx-auto">
-        <Typography variant="h5" className="mb-6 text-center">
-          📈 CSI Analytics Dashboard
-        </Typography>
+    <>
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <main className="p-6 max-w-7xl mx-auto">
+          <Typography variant="h5" className="mb-6 text-center">
+            📈 CSI Analytics Dashboard
+          </Typography>
 
-        {loading ? (
-          <div className="flex justify-center mt-12">
-            <CircularProgress />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-            {/* Monthly Line Chart */}
-            <Card>
-              <CardContent>
-                <Line data={monthlyChartData} options={monthlyChartOptions} />
-              </CardContent>
-            </Card>
+          {loading ? (
+            <div className="flex justify-center mt-12">
+              <CircularProgress />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+              {/* Monthly Line Chart */}
+              <Card>
+                <CardContent>
+                  <Line data={monthlyChartData} options={monthlyChartOptions} />
+                </CardContent>
+              </Card>
 
-            {/* Top Complaints List */}
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  📝 Top Complaints (Lowest Ratings)
-                </Typography>
-                {topComplaints.length === 0 ? (
-                  <Typography>No complaints with low ratings found.</Typography>
-                ) : (
-                  <List>
-                    {topComplaints.map((item, index) => (
-                      <ListItem key={item.id} divider>
-                        <ListItemText
-                          primary={`${item.name} (${item.passport_number})`}
-                          secondary={item.comment}
-                        />
-                      </ListItem>
-                    ))}
-                  </List>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        )}
-      </main>
-    </div>
+              {/* Top Complaints List */}
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    📝 Top Complaints (Lowest Ratings)
+                  </Typography>
+                  {topComplaints.length === 0 ? (
+                    <Typography>No complaints with low ratings found.</Typography>
+                  ) : (
+                    <List>
+                      {topComplaints.map((item, index) => (
+                        <ListItem key={item.id} divider>
+                          <ListItemText
+                            primary={`${item.name} (${item.passport_number})`}
+                            secondary={item.comment}
+                          />
+                        </ListItem>
+                      ))}
+                    </List>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </main>
+      </div>
+    </>
   );
 }

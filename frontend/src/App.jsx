@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import FeedbackForm from './pages/FeedbackForm'
 import Dashboard from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
+import DashboardStatistics from "./pages/DashboardStatistics";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         }
       />
       <Route path="/analytics" element={<Analytics />} />
+      <Route path="/dashboard/statistics" element={<DashboardStatistics />} />
     </Routes>
     
     </>

@@ -19,6 +19,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# "http://localhost:5173",
+# "https://alakeem-csi.vercel.app/",
+
 # Routers
 app.include_router(auth.router)
 app.include_router(feedback.router)

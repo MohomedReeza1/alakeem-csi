@@ -13,7 +13,7 @@ function App() {
     <Toaster position="top-center" />
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/feedback" element={<FeedbackForm />} />
+      <Route path="/" element={<FeedbackForm />} />
       <Route
         path="/dashboard"
         element={

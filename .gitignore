@@ -8,4 +8,3 @@ frontend/dist/
 **/*.pyc
 **/*.sqlite3
 backend/alembic/versions/
-backend/app/main.py

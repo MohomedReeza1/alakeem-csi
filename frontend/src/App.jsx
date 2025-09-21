@@ -4,7 +4,7 @@ import { Toaster } from "react-hot-toast"
 import Login from './pages/Login'
 import FeedbackForm from './pages/FeedbackForm'
 import Dashboard from "./pages/Dashboard";
-import Analytics from "./pages/Analytics";
+import Analyticss from "./pages/Analyticss";
 import DashboardStatistics from "./pages/DashboardStatistics";
 import { Analytics } from '@vercel/analytics/react'
 
@@ -23,8 +23,8 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route path="/analytics" element={<Analytics />} />
-        <Route path="/dashboard/statistics" element={<DashboardStatistics />} />
+        <Route path="/analytics" element={<PrivateRoute><Analyticss /></PrivateRoute>} />
+        <Route path="/dashboard/statistics" element={<PrivateRoute><DashboardStatistics /></PrivateRoute>} />
       </Routes>
       <Analytics />
     </>

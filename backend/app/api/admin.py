@@ -1,9 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app import schemas, crud
-from app.db import get_db
+from app.db import SessionLocal
 
 router = APIRouter()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 @router.post("/register-admin", response_model=schemas.AdminOut)
 def register_admin(admin: schemas.AdminCreate, db: Session = Depends(get_db)):

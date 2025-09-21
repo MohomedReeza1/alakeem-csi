@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import auth, feedback
+from app.api import auth, feedback, admin
 
 app = FastAPI(
     title="CSI Feedback API",
@@ -22,6 +22,7 @@ app.add_middleware(
 # Routers
 app.include_router(auth.router)
 app.include_router(feedback.router)
+app.include_router(admin.router, prefix="/api")
 
 # Health check
 @app.get("/")

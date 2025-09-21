@@ -6,26 +6,27 @@ import FeedbackForm from './pages/FeedbackForm'
 import Dashboard from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
 import DashboardStatistics from "./pages/DashboardStatistics";
+import { Analytics } from '@vercel/analytics/react'
 
 function App() {
   return (
     <>
-    <Toaster position="top-center" />
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/" element={<FeedbackForm />} />
-      <Route
-        path="/dashboard"
-        element={
-          <PrivateRoute>
-            <Dashboard />
-          </PrivateRoute>
-        }
-      />
-      <Route path="/analytics" element={<Analytics />} />
-      <Route path="/dashboard/statistics" element={<DashboardStatistics />} />
-    </Routes>
-    
+      <Toaster position="top-center" />
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<FeedbackForm />} />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route path="/analytics" element={<Analytics />} />
+        <Route path="/dashboard/statistics" element={<DashboardStatistics />} />
+      </Routes>
+      <Analytics />
     </>
   )
 }

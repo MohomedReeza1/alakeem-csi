@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard";
 import Analyticss from "./pages/Analyticss";
 import DashboardStatistics from "./pages/DashboardStatistics";
 import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="/dashboard/statistics" element={<PrivateRoute><DashboardStatistics /></PrivateRoute>} />
       </Routes>
       <Analytics />
+      <SpeedInsights/>
     </>
   )
 }

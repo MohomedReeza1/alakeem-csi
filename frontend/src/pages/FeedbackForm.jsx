@@ -244,7 +244,7 @@ function CommentStep({ form, setForm, handleToSubmitStep, handleBack }) {
         <div className="mt-8 flex justify-center">
           <button onClick={handleToSubmitStep} className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700">Next</button>
         </div>
-        <p className="text-gray-600 pt-6">Step 11 of 12</p>
+        <p className="text-gray-600 pt-6">Step 12 of 12</p>
       </div>
       <IconButton onClick={handleToSubmitStep} className="!absolute -right-16" sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc" }}>
         <ArrowForwardIosIcon />

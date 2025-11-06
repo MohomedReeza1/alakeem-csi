@@ -12,6 +12,7 @@ class Feedback(Base):
     reference_number = Column(String, nullable=False)
     comment = Column(String)
 
+    security_welcome = Column(Integer, nullable=False)
     criteria_1 = Column(Integer, nullable=False)
     criteria_2 = Column(Integer, nullable=False)
     criteria_3 = Column(Integer, nullable=False)

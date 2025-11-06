@@ -121,6 +121,7 @@ def get_feedbacks_with_count(
 
 def get_average_per_criteria(db: Session):
     averages = db.query(
+        func.avg(models.Feedback.security_welcome),
         func.avg(models.Feedback.criteria_1),
         func.avg(models.Feedback.criteria_2),
         func.avg(models.Feedback.criteria_3),
@@ -131,6 +132,7 @@ def get_average_per_criteria(db: Session):
     ).first()
 
     return {
+        "security_welcome": round(averages[0] or 0, 2),
         "criteria_1": round(averages[0] or 0, 2),
         "criteria_2": round(averages[1] or 0, 2),
         "criteria_3": round(averages[2] or 0, 2),
@@ -152,9 +154,9 @@ def get_monthly_feedback_counts(db: Session):
 
 def get_top_complaints(db: Session, limit: int = 5):
     avg_rating_expr = (
-        (models.Feedback.criteria_1 + models.Feedback.criteria_2 + models.Feedback.criteria_3 +
+        (models.Feedback.security_welcome + models.Feedback.criteria_1 + models.Feedback.criteria_2 + models.Feedback.criteria_3 +
          models.Feedback.criteria_4 + models.Feedback.criteria_5 + models.Feedback.criteria_6 +
-         models.Feedback.criteria_7) / 7
+         models.Feedback.criteria_7) / 8
     )
 
     feedbacks = db.query(models.Feedback).filter(models.Feedback.comment != None).order_by(

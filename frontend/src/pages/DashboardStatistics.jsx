@@ -16,6 +16,7 @@ export default function DashboardStatistics() {
   }, []);
 
   const criteria = [
+    { key: "security_welcome", label: "Security Guards Welcome" },
     { key: "criteria_1", label: "Welcome" },
     { key: "criteria_2", label: "Friendliness" },
     { key: "criteria_3", label: "Information" },

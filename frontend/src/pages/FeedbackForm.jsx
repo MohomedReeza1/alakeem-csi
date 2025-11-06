@@ -7,6 +7,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import api from "../api/axios";
 
 const criteriaLabels = [
+  { en: "Security Guards Welcome", si: "ආරක්ෂක නිළධාරීන්ගේ පිළිගැනීම", ta: "பாதுகாப்பு பணியாளர்களின் வரவேற்பு" },
   { en: "Welcome", si: "පිළිගැනීම", ta: "ஏற்றுக்கொள்ளுதல்" },
   { en: "Friendliness", si: "සුහදත්වය", ta: "நட்பு" },
   { en: "Information", si: "තොරතුරු සැපයීම", ta: "தகவல் வழங்குதல்" },
@@ -23,22 +24,22 @@ export default function FeedbackForm() {
     name: "",
     passport: "",
     reference: "",
-    ratings: Array(7).fill(0),
+    ratings: Array(8).fill(0),
     comment: "",
   });
   const [passportError, setPassportError] = useState("");
   const [referenceError, setReferenceError] = useState("");
 
-  const handleNext = () => step < 11 && setStep(step + 1);
+  const handleNext = () => step < 12 && setStep(step + 1);
   const handleBack = () => step > 0 && setStep(step - 1);
-  const handleToSubmitStep = () => setStep(11);
+  const handleToSubmitStep = () => setStep(12);
 
   const handleRating = (index, value) => {
     const updated = [...form.ratings];
     updated[index] = value;
     setForm({ ...form, ratings: updated });
     setTimeout(() => {
-      if (step < 10) setStep(step + 1);
+      if (step < 11) setStep(step + 1);
     }, 800);
   };
 
@@ -72,16 +73,17 @@ export default function FeedbackForm() {
         passport_number: form.passport,
         reference_number: form.reference,
         comment: form.comment,
-        criteria_1: form.ratings[0],
-        criteria_2: form.ratings[1],
-        criteria_3: form.ratings[2],
-        criteria_4: form.ratings[3],
-        criteria_5: form.ratings[4],
-        criteria_6: form.ratings[5],
-        criteria_7: form.ratings[6],
+        security_welcome: form.ratings[0],
+        criteria_1: form.ratings[1],
+        criteria_2: form.ratings[2],
+        criteria_3: form.ratings[3],
+        criteria_4: form.ratings[4],
+        criteria_5: form.ratings[5],
+        criteria_6: form.ratings[6],
+        criteria_7: form.ratings[7],
       });
       toast.success("🎉 Thank you for your feedback!");
-      setForm({ name: "", passport: "", reference: "", ratings: Array(7).fill(0), comment: "" });
+      setForm({ name: "", passport: "", reference: "", ratings: Array(8).fill(0), comment: "" });
       setStep(0);
     } catch (err) {
       console.error(err.response?.data || err.message);
@@ -148,15 +150,15 @@ export default function FeedbackForm() {
           />
         )}
 
-        {step >= 3 && step <= 9 && (
+        {step >= 3 && step <= 10 && (
           <RatingStep step={step} handleBack={handleBack} handleNext={handleNext} form={form} handleRating={handleRating} />
         )}
 
-        {step === 10 && (
+        {step === 11 && (
           <CommentStep form={form} setForm={setForm} handleToSubmitStep={handleToSubmitStep} handleBack={handleBack} />
         )}
 
-        {step === 11 && (
+        {step === 12 && (
           <SubmitStep loading={loading} handleSubmit={handleSubmit} handleBack={handleBack} />
         )}
       </div>
@@ -193,7 +195,7 @@ function InputStep({ labelSi, labelEn, labelTa, value, onChange, error, disabled
             </button>
           </div>
         </form>
-        <p className="text-gray-600 pt-6">Step {step} of 11</p>
+        <p className="text-gray-600 pt-6">Step {step} of 12</p>
       </div>
       <IconButton onClick={handleNext} className="!absolute -right-16" sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc" }}>
         <ArrowForwardIosIcon />
@@ -219,7 +221,7 @@ function RatingStep({ step, handleBack, handleNext, form, handleRating }) {
             </button>
           ))}
         </div>
-        <p className="text-gray-600 pt-6">Step {step + 1} of 11</p>
+        <p className="text-gray-600 pt-6">Step {step + 1} of 12</p>
       </div>
       <IconButton onClick={handleNext} className="!absolute -right-16" sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc" }}>
         <ArrowForwardIosIcon />
@@ -242,7 +244,7 @@ function CommentStep({ form, setForm, handleToSubmitStep, handleBack }) {
         <div className="mt-8 flex justify-center">
           <button onClick={handleToSubmitStep} className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700">Next</button>
         </div>
-        <p className="text-gray-600 pt-6">Step 11 of 11</p>
+        <p className="text-gray-600 pt-6">Step 11 of 12</p>
       </div>
       <IconButton onClick={handleToSubmitStep} className="!absolute -right-16" sx={{ width: 56, height: 56, borderRadius: "9999px", border: "2px solid #d1d5dc" }}>
         <ArrowForwardIosIcon />

@@ -115,6 +115,7 @@ export default function Dashboard() {
 
   const detailedColumns = [
     { field: "name", headerName: "Name", flex: 1 },
+    { field: "security_welcome", headerName: "Security Guards Welcome", flex: 1, renderCell: (params) => renderStars(params.value) },
     { field: "criteria_1", headerName: "Welcome", flex: 1, renderCell: (params) => renderStars(params.value) },
     { field: "criteria_2", headerName: "Friendliness", flex: 1, renderCell: (params) => renderStars(params.value) },
     { field: "criteria_3", headerName: "Information", flex: 1, renderCell: (params) => renderStars(params.value) },
@@ -136,10 +137,10 @@ export default function Dashboard() {
       flex: 1,
       renderCell: (params) => {
         const row = params.row;
-        const sum = (row.criteria_1 || 0) + (row.criteria_2 || 0) + (row.criteria_3 || 0) +
+        const sum = (row.security_welcome || 0) + (row.criteria_1 || 0) + (row.criteria_2 || 0) + (row.criteria_3 || 0) +
                     (row.criteria_4 || 0) + (row.criteria_5 || 0) + (row.criteria_6 || 0) +
                     (row.criteria_7 || 0);
-        const avg = sum / 7;
+        const avg = sum / 8;
         return renderStars(avg);
       },
     },
@@ -178,6 +179,7 @@ export default function Dashboard() {
               <InputLabel>Criterion</InputLabel>
               <Select value={criterion} label="Criterion" onChange={(e) => setCriterion(e.target.value)}>
                 <MenuItem value="">None</MenuItem>
+                <MenuItem value="security_welcome">Security Guards Welcome</MenuItem>
                 <MenuItem value="criteria_1">Welcome</MenuItem>
                 <MenuItem value="criteria_2">Friendliness</MenuItem>
                 <MenuItem value="criteria_3">Information</MenuItem>

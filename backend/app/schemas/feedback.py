@@ -8,6 +8,7 @@ class FeedbackBase(BaseModel):
     passport_number: str
     reference_number: str
     comment: Optional[str] = None
+    security_welcome: int
     criteria_1: int
     criteria_2: int
     criteria_3: int
